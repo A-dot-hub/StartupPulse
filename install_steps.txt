@@ -1,0 +1,10 @@
+git clone <your-repository>
+cd StartupPulse
+
+py -3.11 -m venv venv
+
+.\venv\Scripts\Activate.ps1
+
+python -m pip install -r requirements.txt
+
+python -c "import pandas, numpy, matplotlib, seaborn, sklearn, xgboost, joblib, shap; print('StartupPulse ML environment ready')"
