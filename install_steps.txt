@@ -8,3 +8,5 @@ py -3.11 -m venv venv
 python -m pip install -r requirements.txt
 
 python -c "import pandas, numpy, matplotlib, seaborn, sklearn, xgboost, joblib, shap; print('StartupPulse ML environment ready')"
+
+.\venv\Scripts\python.exe -m pip ...

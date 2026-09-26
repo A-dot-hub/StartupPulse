@@ -1,11 +1,14 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-
 from pydantic import BaseModel, Field
 
-import sys
 from pathlib import Path
+from datetime import datetime, timezone
+import sys
+import pandas as pd
 
+from pymongo import MongoClient
+from pymongo.errors import PyMongoError
 
 # ============================================================
 # PROJECT PATH
@@ -13,19 +16,15 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Allow Python to find the ml package
-sys.path.append(str(BASE_DIR))
+if str(BASE_DIR) not in sys.path:
+    sys.path.append(str(BASE_DIR))
 
-
-# ============================================================
-# IMPORT ML PREDICTION FUNCTION
-# ============================================================
-
+# Import ML prediction function
 from ml.predict import predict_startup
 
 
 # ============================================================
-# CREATE FASTAPI APPLICATION
+# FASTAPI APP
 # ============================================================
 
 app = FastAPI(
@@ -41,90 +40,124 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-
     allow_origins=["*"],
-
     allow_credentials=True,
-
     allow_methods=["*"],
-
     allow_headers=["*"],
 )
 
 
 # ============================================================
-# REQUEST SCHEMA
+# MONGODB CONFIGURATION
+# ============================================================
+
+MONGO_URL = "mongodb://localhost:27017"
+DATABASE_NAME = "startuppulse"
+COLLECTION_NAME = "predictions"
+
+mongo_client = None
+db = None
+predictions_collection = None
+
+
+def connect_mongodb():
+    """
+    Connect to local MongoDB.
+    """
+
+    global mongo_client
+    global db
+    global predictions_collection
+
+    try:
+        mongo_client = MongoClient(
+            MONGO_URL,
+            serverSelectionTimeoutMS=3000
+        )
+
+        # Force connection test
+        mongo_client.admin.command("ping")
+
+        db = mongo_client[DATABASE_NAME]
+        predictions_collection = db[COLLECTION_NAME]
+
+        print("MongoDB connected successfully")
+        print(f"Database: {DATABASE_NAME}")
+        print(f"Collection: {COLLECTION_NAME}")
+
+        return True
+
+    except PyMongoError as error:
+        print(f"MongoDB connection failed: {error}")
+
+        mongo_client = None
+        db = None
+        predictions_collection = None
+
+        return False
+
+
+# Connect when API starts
+mongo_connected = connect_mongodb()
+
+
+# ============================================================
+# PYDANTIC INPUT MODEL
 # ============================================================
 
 class StartupInput(BaseModel):
-
-    primary_category: str = Field(
-        ...,
-        description="Primary startup category"
-    )
+    primary_category: str = Field(..., min_length=1)
 
     funding_total_usd: float = Field(
         ...,
-        ge=0,
-        description="Total startup funding in USD"
+        ge=0
     )
 
-    country_code: str = Field(
-        ...,
-        description="Country code, e.g. USA"
-    )
+    country_code: str = Field(..., min_length=1)
 
     state_code: str = Field(
-        default="Unknown",
-        description="State or province code"
+        default="Unknown"
     )
 
     region: str = Field(
-        default="Unknown",
-        description="Startup region"
+        default="Unknown"
     )
 
     city: str = Field(
-        default="Unknown",
-        description="Startup city"
+        default="Unknown"
     )
 
     funding_rounds: int = Field(
         ...,
-        ge=1,
-        description="Number of funding rounds"
+        ge=1
     )
 
     startup_age: float = Field(
         ...,
-        ge=0,
-        description="Startup age in years"
+        ge=0
     )
 
     years_to_first_funding: float = Field(
         ...,
-        ge=0,
-        description="Years between founding and first funding"
+        ge=0
     )
 
     funding_per_round: float = Field(
         ...,
-        ge=0,
-        description="Average funding per funding round"
+        ge=0
     )
 
 
 # ============================================================
-# ROOT ENDPOINT
+# ROOT
 # ============================================================
 
 @app.get("/")
 def root():
-
     return {
-        "message": "StartupPulse API is running",
-        "version": "1.0.0",
-        "status": "online"
+        "message": "Welcome to StartupPulse API",
+        "status": "running",
+        "version": "1.0.0"
     }
 
 
@@ -133,53 +166,252 @@ def root():
 # ============================================================
 
 @app.get("/health")
-def health_check():
+def health():
+
+    mongodb_status = "connected" if predictions_collection is not None else "disconnected"
 
     return {
         "status": "healthy",
         "model": "XGBoost",
-        "service": "StartupPulse"
+        "service": "StartupPulse API",
+        "mongodb": mongodb_status
     }
 
 
 # ============================================================
-# PREDICTION ENDPOINT
+# PREDICTION
 # ============================================================
 
 @app.post("/predict")
-def predict(startup: StartupInput):
+def predict_startup_api(startup: StartupInput):
 
     try:
 
+        # ----------------------------------------------------
+        # Run ML model
+        # ----------------------------------------------------
+
         result = predict_startup(
-
             primary_category=startup.primary_category,
-
             funding_total_usd=startup.funding_total_usd,
-
             country_code=startup.country_code,
-
             state_code=startup.state_code,
-
             region=startup.region,
-
             city=startup.city,
-
             funding_rounds=startup.funding_rounds,
-
             startup_age=startup.startup_age,
-
             years_to_first_funding=startup.years_to_first_funding,
-
             funding_per_round=startup.funding_per_round
         )
 
+        # ----------------------------------------------------
+        # Prepare prediction document
+        # ----------------------------------------------------
+
+        prediction_document = {
+            "input": startup.model_dump(),
+
+            "prediction": result["prediction"],
+            "prediction_class": result["prediction_class"],
+
+            "success_probability": result["success_probability"],
+            "failure_probability": result["failure_probability"],
+
+            "risk_level": result["risk_level"],
+
+            "model": "XGBoost",
+
+            "created_at": datetime.now(timezone.utc)
+        }
+
+        # ----------------------------------------------------
+        # Save to MongoDB
+        # ----------------------------------------------------
+
+        saved = False
+
+        if predictions_collection is not None:
+
+            try:
+
+                insert_result = predictions_collection.insert_one(
+                    prediction_document
+                )
+
+                prediction_id = str(insert_result.inserted_id)
+
+                saved = True
+
+            except PyMongoError as error:
+
+                print(f"MongoDB save failed: {error}")
+
+                prediction_id = None
+
+        else:
+
+            prediction_id = None
+
+        # ----------------------------------------------------
+        # API RESPONSE
+        # ----------------------------------------------------
+
         return {
             "success": True,
-            "data": result
+
+            "data": result,
+
+            "prediction_id": prediction_id,
+
+            "saved_to_database": saved
         }
 
     except Exception as error:
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(error)
+        )
+
+
+# ============================================================
+# PREDICTION HISTORY
+# ============================================================
+
+@app.get("/history")
+def get_prediction_history(limit: int = 20):
+
+    if predictions_collection is None:
+
+        raise HTTPException(
+            status_code=503,
+            detail="MongoDB is not connected"
+        )
+
+    try:
+
+        limit = min(max(limit, 1), 100)
+
+        predictions = list(
+            predictions_collection
+            .find()
+            .sort("created_at", -1)
+            .limit(limit)
+        )
+
+        history = []
+
+        for prediction in predictions:
+
+            history.append({
+                "id": str(prediction["_id"]),
+
+                "input": prediction.get(
+                    "input",
+                    {}
+                ),
+
+                "prediction": prediction.get(
+                    "prediction"
+                ),
+
+                "prediction_class": prediction.get(
+                    "prediction_class"
+                ),
+
+                "success_probability": prediction.get(
+                    "success_probability"
+                ),
+
+                "failure_probability": prediction.get(
+                    "failure_probability"
+                ),
+
+                "risk_level": prediction.get(
+                    "risk_level"
+                ),
+
+                "model": prediction.get(
+                    "model"
+                ),
+
+                "created_at": prediction.get(
+                    "created_at"
+                ).isoformat()
+                if prediction.get("created_at")
+                else None
+            })
+
+        return {
+            "success": True,
+            "count": len(history),
+            "data": history
+        }
+
+    except PyMongoError as error:
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(error)
+        )
+
+
+# ============================================================
+# GET SINGLE PREDICTION
+# ============================================================
+
+@app.get("/history/{prediction_id}")
+def get_prediction(prediction_id: str):
+
+    if predictions_collection is None:
+
+        raise HTTPException(
+            status_code=503,
+            detail="MongoDB is not connected"
+        )
+
+    try:
+
+        from bson import ObjectId
+
+        prediction = predictions_collection.find_one(
+            {
+                "_id": ObjectId(prediction_id)
+            }
+        )
+
+        if prediction is None:
+
+            raise HTTPException(
+                status_code=404,
+                detail="Prediction not found"
+            )
+
+        return {
+            "success": True,
+            "data": {
+                "id": str(prediction["_id"]),
+                "input": prediction.get("input", {}),
+                "prediction": prediction.get("prediction"),
+                "prediction_class": prediction.get("prediction_class"),
+                "success_probability": prediction.get("success_probability"),
+                "failure_probability": prediction.get("failure_probability"),
+                "risk_level": prediction.get("risk_level"),
+                "model": prediction.get("model"),
+                "created_at": prediction.get("created_at").isoformat()
+                if prediction.get("created_at")
+                else None
+            }
+        }
+
+    except ValueError:
+
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid prediction ID"
+        )
+
+    except PyMongoError as error:
 
         raise HTTPException(
             status_code=500,
@@ -192,43 +424,110 @@ def predict(startup: StartupInput):
 # ============================================================
 
 @app.get("/model-info")
-def model_info():
+def get_model_info():
 
-    return {
-        "model": "XGBoost",
+    comparison_path = (
+        BASE_DIR
+        / "ml"
+        / "models"
+        / "model_comparison.csv"
+    )
 
-        "task": "Binary Classification",
+    if not comparison_path.exists():
 
-        "target": {
-            "0": "Failure",
-            "1": "Successful Outcome"
-        },
+        raise HTTPException(
+            status_code=404,
+            detail="model_comparison.csv not found"
+        )
 
-        "metrics": {
-            "accuracy": 0.7630,
-            "precision": 0.7537,
-            "recall": 0.8238,
-            "f1_score": 0.7872,
-            "roc_auc": 0.8355
-        },
+    try:
 
-        "features": [
-            "primary_category",
-            "funding_total_usd",
-            "country_code",
-            "state_code",
-            "region",
-            "city",
-            "funding_rounds",
-            "startup_age",
-            "years_to_first_funding",
-            "funding_per_round"
+        df = pd.read_csv(comparison_path)
+
+        # Convert entire comparison table into JSON-compatible format
+        models = df.to_dict(
+            orient="records"
+        )
+
+        # Find XGBoost row
+        xgb_rows = df[
+            df["Model"].astype(str).str.lower().str.contains(
+                "xgboost"
+            )
         ]
-    }
+
+        selected_model = "XGBoost"
+
+        selected_metrics = {}
+
+        if not xgb_rows.empty:
+
+            row = xgb_rows.iloc[0]
+
+            for column in df.columns:
+
+                if column != "Model":
+
+                    value = row[column]
+
+                    if pd.notna(value):
+
+                        try:
+                            value = float(value)
+                        except (ValueError, TypeError):
+                            value = str(value)
+
+                    selected_metrics[column] = value
+
+        return {
+            "success": True,
+
+            "selected_model": selected_model,
+
+            "selected_metrics": selected_metrics,
+
+            "models": models,
+
+            "features": [
+                "primary_category",
+                "funding_total_usd",
+                "country_code",
+                "state_code",
+                "region",
+                "city",
+                "funding_rounds",
+                "startup_age",
+                "years_to_first_funding",
+                "funding_per_round"
+            ]
+        }
+
+    except Exception as error:
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(error)
+        )
 
 
 # ============================================================
-# RUN DIRECTLY
+# SHUTDOWN
+# ============================================================
+
+@app.on_event("shutdown")
+def shutdown_event():
+
+    global mongo_client
+
+    if mongo_client is not None:
+
+        mongo_client.close()
+
+        print("MongoDB connection closed")
+
+
+# ============================================================
+# DIRECT RUN
 # ============================================================
 
 if __name__ == "__main__":
@@ -242,60 +541,73 @@ if __name__ == "__main__":
         reload=True
     )
 
-
 # ```
 
-# ### Install FastAPI dependencies
+# ### 4. Start MongoDB + FastAPI
 
-# If you haven't installed them yet:
+# Make sure MongoDB service is running first.
+
+# Then:
 
 # ```powershell
-# pip install fastapi uvicorn pydantic
+# .\venv\Scripts\python.exe -m uvicorn backend.main:app --reload
 # ```
 
-# Then run from the **StartupPulse root folder**:
-
-# ```powershell
-# python -m uvicorn backend.main:app --reload
-# ```
-
-# You should see:
+# You want to see:
 
 # ```text
-# INFO:     Uvicorn running on http://127.0.0.1:8000
+# MongoDB connected successfully
+# Database: startuppulse
+# Collection: predictions
 # ```
 
-# ### Test it
-
-# Open:
-
-# ```text
-# http://127.0.0.1:8000
-# ```
-
-# You should get:
-
-# ```json
-# {
-#   "message": "StartupPulse API is running",
-#   "version": "1.0.0",
-#   "status": "online"
-# }
-# ```
-
-# Health:
-
-# ```text
-# http://127.0.0.1:8000/health
-# ```
-
-# And FastAPI automatically gives you interactive API documentation at:
+# Then open:
 
 # ```text
 # http://127.0.0.1:8000/docs
 # ```
 
-# In `/docs`, open **POST `/predict` → Try it out** and use:
+# ### 5. Test in this order
+
+# #### A. Test `/health`
+
+# Click **GET `/health` → Try it out → Execute**.
+
+# You should get:
+
+# ```json
+# {
+#   "status": "healthy",
+#   "model": "XGBoost",
+#   "service": "StartupPulse API",
+#   "mongodb": "connected"
+# }
+# ```
+
+# #### B. Test `/model-info`
+
+# This is now **dynamic**.
+
+# It reads:
+
+# ```text
+# ml/models/model_comparison.csv
+# ```
+
+# instead of using:
+
+# ```python
+# 0.7630
+# 0.7537
+# 0.8238
+# ...
+# ```
+
+# So when you retrain the models later, the API automatically reflects the CSV.
+
+# #### C. Test `/predict`
+
+# Use:
 
 # ```json
 # {
@@ -312,7 +624,7 @@ if __name__ == "__main__":
 # }
 # ```
 
-# The response will be generated by your actual saved XGBoost model:
+# The response should contain:
 
 # ```json
 # {
@@ -323,32 +635,61 @@ if __name__ == "__main__":
 #     "success_probability": 0,
 #     "failure_probability": 0,
 #     "risk_level": "..."
-#   }
+#   },
+#   "prediction_id": "...",
+#   "saved_to_database": true
 # }
 # ```
 
-# The probability values above are placeholders—the API will return the actual model output.
+# The probability numbers will come from your actual model.
 
-# ### Current architecture
+# ### 6. Verify MongoDB
+
+# Open **MongoDB Compass** and connect to:
 
 # ```text
-#                  StartupPulse
-#                       │
-#           ┌───────────┴───────────┐
-#           │                       │
-#        React.js               FastAPI
-#           │                       │
-#           │                  POST /predict
-#           │                       │
-#           │                  ml/predict.py
-#           │                       │
-#           │                startup_model.pkl
-#           │                       │
-#           │                    XGBoost
-#           │
-#           └─────── Prediction Dashboard
+# mongodb://localhost:27017
 # ```
 
-# One correction for the next stage: the `/model-info` metrics are currently copied from this training run. Later, we'll load them from `model_comparison.csv` instead of hardcoding them, so the API automatically reflects the latest trained model.
+# You should now see:
 
-# **Next major step after verifying `/docs` is MongoDB integration**, followed by the React frontend.
+# ```text
+# startuppulse
+#     └── predictions
+# ```
+
+# and inside `predictions`, your prediction should be stored.
+
+# ### 7. Test prediction history
+
+# In Swagger, call:
+
+# ```text
+# GET /history
+# ```
+
+# You should get the predictions you just created.
+
+# ---
+
+# ### Our backend is then essentially structured like this
+
+# ```text
+# React Frontend
+#        │
+#        │ POST /predict
+#        ▼
+#    FastAPI
+#        │
+#        ├──────────────► XGBoost Model
+#        │                    │
+#        │                    ▼
+#        │             Prediction Result
+#        │
+#        └──────────────► MongoDB
+#                             │
+#                             ▼
+#                      Prediction History
+# ```
+
+# **Run the install + FastAPI test first.** If `/health`, `/model-info`, `/predict`, and `/history` all work, the next stage is the **React frontend**, where we'll build the StartupPulse dashboard and connect it to these APIs.
