@@ -1,0 +1,183 @@
+.results-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.results-hero-card {
+  background: linear-gradient(135deg, #131b2e 0%, #0c1220 100%);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 2.25rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.results-hero-card.success-border {
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 8px 32px -8px rgba(16, 185, 129, 0.2);
+}
+
+.results-hero-card.failure-border {
+  border-color: rgba(244, 63, 94, 0.4);
+  box-shadow: 0 8px 32px -8px rgba(244, 63, 94, 0.2);
+}
+
+.results-grid-main {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 2rem;
+  align-items: center;
+}
+
+@media (max-width: 900px) {
+  .results-grid-main {
+    grid-template-columns: 1fr;
+  }
+}
+
+.prediction-outcome-tag {
+  font-size: 0.825rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.prediction-outcome-title {
+  font-size: 2.35rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.25rem;
+  line-height: 1.15;
+}
+
+.prediction-outcome-title.outcome-success {
+  color: #34d399;
+}
+
+.prediction-outcome-title.outcome-failure {
+  color: #fb7185;
+}
+
+.probability-metric-row {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.prob-metric {
+  display: flex;
+  flex-direction: column;
+}
+
+.prob-metric-label {
+  font-size: 0.775rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.25rem;
+}
+
+.prob-metric-val {
+  font-size: 2rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  letter-spacing: -0.02em;
+}
+
+.prob-metric-val.success {
+  color: #34d399;
+}
+
+.prob-metric-val.failure {
+  color: #fb7185;
+}
+
+/* Visual probability split bar */
+.prob-split-bar {
+  width: 100%;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+  display: flex;
+  margin-bottom: 1.5rem;
+}
+
+.prob-bar-success {
+  height: 100%;
+  background: #10b981;
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.prob-bar-failure {
+  height: 100%;
+  background: #f43f5e;
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Inputs inspection grid */
+.inputs-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+}
+
+.inputs-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.inputs-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.inputs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.25rem;
+}
+
+.input-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.input-item-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.input-item-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-main);
+  font-family: var(--font-mono);
+}
+
+.results-actions-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
