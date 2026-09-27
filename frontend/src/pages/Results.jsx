@@ -16,12 +16,45 @@ import {
 import { usePrediction } from '../context/PredictionContext';
 import PredictionCard from '../components/PredictionCard';
 import ProbabilityChart from '../components/ProbabilityChart';
+import SHAPExplanation from '../components/SHAPExplanation';
 import EmptyState from '../components/EmptyState';
 import { formatCurrency, formatNumber } from '../utils/formatters';
+import { explainStartup } from '../services/api';
 
 export default function Results() {
   const navigate = useNavigate();
   const { latestPrediction } = usePrediction();
+  const [explanation, setExplanation] = React.useState(
+    latestPrediction?.explanation || null
+  );
+  const [isExplaining, setIsExplaining] = React.useState(false);
+  const [explainError, setExplainError] = React.useState(null);
+
+  React.useEffect(() => {
+    if (latestPrediction?.explanation) {
+      setExplanation(latestPrediction.explanation);
+    } else if (latestPrediction?.input) {
+      let isMounted = true;
+      setIsExplaining(true);
+      explainStartup(latestPrediction.input)
+        .then((res) => {
+          if (isMounted && res?.data) {
+            setExplanation(res.data);
+          }
+        })
+        .catch((err) => {
+          if (isMounted) {
+            setExplainError(err.message);
+          }
+        })
+        .finally(() => {
+          if (isMounted) setIsExplaining(false);
+        });
+      return () => {
+        isMounted = false;
+      };
+    }
+  }, [latestPrediction]);
 
   if (!latestPrediction) {
     return (
@@ -150,6 +183,13 @@ export default function Results() {
             </div>
           </div>
         </div>
+
+        {/* Individual SHAP Explainability Component */}
+        <SHAPExplanation
+          explanation={explanation}
+          isLoading={isExplaining}
+          error={explainError}
+        />
 
         {/* Input Parameters Inspection Card */}
         <div className="inputs-card">

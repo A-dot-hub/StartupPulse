@@ -295,6 +295,73 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Global Feature Importance Section */}
+        <div className="sp-card">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border-subtle)' }}>
+            <div>
+              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#38BDF8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Global Model Explanation
+              </span>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#FFFFFF', marginTop: '0.2rem' }}>
+                Global Feature Importance
+              </h3>
+            </div>
+            <div style={{ fontSize: '0.75rem', color: '#64748B', fontFamily: 'var(--font-mono)' }}>
+              Source: ml/models/shap/feature_importance.csv
+            </div>
+          </div>
+
+          <p style={{ fontSize: '0.875rem', color: '#94A3B8', marginBottom: '1.25rem', maxWidth: '75ch', lineHeight: '1.6' }}>
+            Answers: <strong style={{ color: '#F8FAFC' }}>"What features generally influence this model across the entire dataset?"</strong> Unlike the Individual Prediction Explanation on the Results page (which explains a specific startup's score), this view captures overall model sensitivity across all historical startup benchmarks using mean absolute SHAP values.
+          </p>
+
+          <div style={{ width: '100%', height: 380 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={
+                  (modelData.global_feature_importance && modelData.global_feature_importance.length > 0)
+                    ? modelData.global_feature_importance.slice(0, 10)
+                    : [
+                        { feature: 'Funding Total', importance: 0.5397 },
+                        { feature: 'Startup Age', importance: 0.3487 },
+                        { feature: 'Category: Unknown', importance: 0.2232 },
+                        { feature: 'Funding Rounds', importance: 0.1657 },
+                        { feature: 'Country: USA', importance: 0.1345 },
+                        { feature: 'Funding Per Round', importance: 0.1078 },
+                        { feature: 'Years to 1st Funding', importance: 0.0950 },
+                        { feature: 'Region: SF Bay Area', importance: 0.0454 },
+                        { feature: 'Category: CleanTech', importance: 0.0282 },
+                        { feature: 'Region: Boston', importance: 0.0214 },
+                      ]
+                }
+                layout="vertical"
+                margin={{ top: 5, right: 30, left: 90, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" horizontal={false} />
+                <XAxis type="number" stroke="#64748B" fontSize={11} tickLine={false} />
+                <YAxis
+                  type="category"
+                  dataKey="feature"
+                  stroke="#94A3B8"
+                  fontSize={12}
+                  tickLine={false}
+                  width={130}
+                />
+                <Tooltip
+                  contentStyle={{
+                    background: '#0F172A',
+                    border: '1px solid rgba(255,255,255,0.15)',
+                    borderRadius: '8px',
+                    fontSize: '0.8rem',
+                  }}
+                  formatter={(val) => [val, 'Mean |SHAP| Value']}
+                />
+                <Bar dataKey="importance" fill="#38BDF8" radius={[0, 4, 4, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
         {/* Features Used Section */}
         <div className="sp-card">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>

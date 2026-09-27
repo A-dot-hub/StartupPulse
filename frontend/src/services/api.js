@@ -105,6 +105,28 @@ export async function predictStartup(startupData) {
 }
 
 /**
+ * Compute individual SHAP feature contributions for a startup
+ * @param {Object} startupData
+ */
+export async function explainStartup(startupData) {
+  const payload = {
+    primary_category: String(startupData.primary_category || '').trim(),
+    funding_total_usd: Number(startupData.funding_total_usd) || 0,
+    country_code: String(startupData.country_code || 'Unknown').trim(),
+    state_code: String(startupData.state_code || 'Unknown').trim(),
+    region: String(startupData.region || 'Unknown').trim(),
+    city: String(startupData.city || 'Unknown').trim(),
+    funding_rounds: Math.max(1, parseInt(startupData.funding_rounds, 10) || 1),
+    startup_age: Math.max(0, Number(startupData.startup_age) || 0),
+    years_to_first_funding: Math.max(0, Number(startupData.years_to_first_funding) || 0),
+    funding_per_round: Math.max(0, Number(startupData.funding_per_round) || 0),
+  };
+
+  const response = await apiClient.post('/explain', payload);
+  return response.data;
+}
+
+/**
  * Fetch ML Model Information and benchmarks
  * Returns: { success, selected_model, selected_metrics, models, features }
  */

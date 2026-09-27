@@ -21,6 +21,11 @@ if str(BASE_DIR) not in sys.path:
 
 # Import ML prediction function
 from ml.predict import predict_startup
+from ml.shap_explainer import (
+    explain_startup_prediction,
+    get_global_feature_importance,
+    load_shap_artifacts
+)
 
 
 # ============================================================
@@ -32,6 +37,21 @@ app = FastAPI(
     description="AI Startup Success & Risk Prediction API",
     version="1.0.0"
 )
+
+
+# ============================================================
+# STARTUP EVENT (SHAP & MODEL INITIALIZATION)
+# ============================================================
+
+@app.on_event("startup")
+def startup_event():
+    """
+    Initialize and cache model and SHAP TreeExplainer on server start.
+    """
+    try:
+        load_shap_artifacts()
+    except Exception as error:
+        print(f"SHAP startup initialization notice: {error}")
 
 
 # ============================================================
@@ -205,6 +225,30 @@ def predict_startup_api(startup: StartupInput):
         )
 
         # ----------------------------------------------------
+        # Calculate SHAP explanation (with error resilience)
+        # ----------------------------------------------------
+
+        explanation = None
+        try:
+            explanation = explain_startup_prediction(
+                primary_category=startup.primary_category,
+                funding_total_usd=startup.funding_total_usd,
+                country_code=startup.country_code,
+                state_code=startup.state_code,
+                region=startup.region,
+                city=startup.city,
+                funding_rounds=startup.funding_rounds,
+                startup_age=startup.startup_age,
+                years_to_first_funding=startup.years_to_first_funding,
+                funding_per_round=startup.funding_per_round
+            )
+        except Exception as shap_error:
+            print(f"SHAP explanation calculation failed: {shap_error}")
+            explanation = None
+
+        result["explanation"] = explanation
+
+        # ----------------------------------------------------
         # Prepare prediction document
         # ----------------------------------------------------
 
@@ -218,6 +262,8 @@ def predict_startup_api(startup: StartupInput):
             "failure_probability": result["failure_probability"],
 
             "risk_level": result["risk_level"],
+
+            "explanation": explanation,
 
             "model": "XGBoost",
 
@@ -271,6 +317,52 @@ def predict_startup_api(startup: StartupInput):
         raise HTTPException(
             status_code=500,
             detail=str(error)
+        )
+
+
+# ============================================================
+# SHAP EXPLANATION
+# ============================================================
+
+@app.post("/explain")
+def explain_startup_api(startup: StartupInput):
+    """
+    Generate individual SHAP feature contributions for a specific startup.
+    Returns:
+    {
+        "success": true,
+        "data": {
+            "base_value": 0.42,
+            "prediction_value": 0.58,
+            "positive_factors": [...],
+            "negative_factors": [...]
+        }
+    }
+    """
+    try:
+        explanation = explain_startup_prediction(
+            primary_category=startup.primary_category,
+            funding_total_usd=startup.funding_total_usd,
+            country_code=startup.country_code,
+            state_code=startup.state_code,
+            region=startup.region,
+            city=startup.city,
+            funding_rounds=startup.funding_rounds,
+            startup_age=startup.startup_age,
+            years_to_first_funding=startup.years_to_first_funding,
+            funding_per_round=startup.funding_per_round
+        )
+
+        return {
+            "success": True,
+            "data": explanation
+        }
+
+    except Exception as error:
+        print(f"SHAP /explain endpoint error: {error}")
+        raise HTTPException(
+            status_code=500,
+            detail="Detailed explanation is temporarily unavailable."
         )
 
 
@@ -329,6 +421,10 @@ def get_prediction_history(limit: int = 20):
 
                 "risk_level": prediction.get(
                     "risk_level"
+                ),
+
+                "explanation": prediction.get(
+                    "explanation"
                 ),
 
                 "model": prediction.get(
@@ -397,6 +493,7 @@ def get_prediction(prediction_id: str):
                 "success_probability": prediction.get("success_probability"),
                 "failure_probability": prediction.get("failure_probability"),
                 "risk_level": prediction.get("risk_level"),
+                "explanation": prediction.get("explanation"),
                 "model": prediction.get("model"),
                 "created_at": prediction.get("created_at").isoformat()
                 if prediction.get("created_at")
@@ -479,6 +576,8 @@ def get_model_info():
 
                     selected_metrics[column] = value
 
+        global_features = get_global_feature_importance(15)
+
         return {
             "success": True,
 
@@ -487,6 +586,8 @@ def get_model_info():
             "selected_metrics": selected_metrics,
 
             "models": models,
+
+            "global_feature_importance": global_features,
 
             "features": [
                 "primary_category",

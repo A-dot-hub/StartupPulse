@@ -15,6 +15,7 @@ import { getPredictionHistory, getPrediction } from '../services/api';
 import RiskBadge from '../components/RiskBadge';
 import LoadingState from '../components/LoadingState';
 import EmptyState from '../components/EmptyState';
+import SHAPExplanation from '../components/SHAPExplanation';
 import {
   formatDate,
   formatPercentage,
@@ -374,6 +375,13 @@ export default function History() {
                       </span>
                     </div>
                   </div>
+
+                  {/* SHAP Explanation in History Modal if available */}
+                  {selectedPrediction.explanation && (
+                    <div style={{ marginTop: '1.5rem' }}>
+                      <SHAPExplanation explanation={selectedPrediction.explanation} />
+                    </div>
+                  )}
                 </div>
               ) : null}
             </div>

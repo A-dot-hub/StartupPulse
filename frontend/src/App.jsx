@@ -19,6 +19,7 @@ import './styles/dashboard.css';
 import './styles/analyze.css';
 import './styles/results.css';
 import './styles/history.css';
+import './styles/shap.css';
 
 export default function App() {
   return (
