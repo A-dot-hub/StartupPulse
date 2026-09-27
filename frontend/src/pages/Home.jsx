@@ -72,7 +72,7 @@ export default function Home() {
       <section
         style={{
           borderBottom: '1px solid var(--border-subtle)',
-          background: 'linear-gradient(180deg, #0e1422 0%, #0a0e17 100%)',
+          background: 'linear-gradient(180deg, var(--bg-card-subtle) 0%, var(--bg-main) 100%)',
           padding: '4.5rem 1.75rem 4rem',
         }}
       >
@@ -97,7 +97,7 @@ export default function Home() {
                 borderRadius: '999px',
                 background: 'rgba(56, 189, 248, 0.1)',
                 border: '1px solid rgba(56, 189, 248, 0.25)',
-                color: '#38BDF8',
+                color: 'var(--accent-cyan)',
                 fontSize: '0.8rem',
                 fontWeight: 600,
                 marginBottom: '1.5rem',
@@ -111,7 +111,7 @@ export default function Home() {
               style={{
                 fontSize: 'clamp(2.4rem, 4.5vw, 3.5rem)',
                 fontWeight: 800,
-                color: '#FFFFFF',
+                color: 'var(--text-heading)',
                 letterSpacing: '-0.03em',
                 lineHeight: 1.15,
                 marginBottom: '1.25rem',
@@ -124,7 +124,7 @@ export default function Home() {
             <p
               style={{
                 fontSize: '1.1rem',
-                color: '#94A3B8',
+                color: 'var(--text-muted)',
                 lineHeight: 1.65,
                 maxWidth: '56ch',
                 marginBottom: '2rem',
@@ -153,19 +153,19 @@ export default function Home() {
                 paddingTop: '1.5rem',
                 borderTop: '1px solid var(--border-subtle)',
                 fontSize: '0.825rem',
-                color: '#64748B',
+                color: 'var(--text-dim)',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <CheckCircle size={15} color="#10B981" />
+                <CheckCircle size={15} color="var(--color-success)" />
                 <span>Real XGBoost Inference</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <CheckCircle size={15} color="#10B981" />
+                <CheckCircle size={15} color="var(--color-success)" />
                 <span>10 Feature Vectors</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <CheckCircle size={15} color="#10B981" />
+                <CheckCircle size={15} color="var(--color-success)" />
                 <span>MongoDB Persistence</span>
               </div>
             </div>
@@ -175,19 +175,19 @@ export default function Home() {
           <div
             className="sp-card"
             style={{
-              background: 'linear-gradient(135deg, #131b2e 0%, #0f1626 100%)',
-              border: '1px solid rgba(56, 189, 248, 0.25)',
-              boxShadow: '0 20px 40px -10px rgba(0,0,0,0.6)',
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border-strong)',
+              boxShadow: 'var(--shadow-elevated)',
               padding: '2rem',
               position: 'relative',
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
               <div>
-                <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>
+                <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-dim)' }}>
                   Live Model Output Preview
                 </span>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#34D399', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-success-text)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <TrendingUp size={20} />
                   Successful Outcome
                 </h3>
@@ -218,25 +218,25 @@ export default function Home() {
               }}
             >
               <div>
-                <span style={{ color: '#64748B', display: 'block', fontSize: '0.75rem' }}>
+                <span style={{ color: 'var(--text-dim)', display: 'block', fontSize: '0.75rem' }}>
                   Success Probability
                 </span>
-                <strong style={{ color: '#34D399', fontSize: '1.2rem', fontFamily: 'var(--font-mono)' }}>
+                <strong style={{ color: 'var(--color-success-text)', fontSize: '1.2rem', fontFamily: 'var(--font-mono)' }}>
                   78.45%
                 </strong>
               </div>
               <div>
-                <span style={{ color: '#64748B', display: 'block', fontSize: '0.75rem' }}>
+                <span style={{ color: 'var(--text-dim)', display: 'block', fontSize: '0.75rem' }}>
                   Failure Probability
                 </span>
-                <strong style={{ color: '#FB7185', fontSize: '1.2rem', fontFamily: 'var(--font-mono)' }}>
+                <strong style={{ color: 'var(--color-danger-text)', fontSize: '1.2rem', fontFamily: 'var(--font-mono)' }}>
                   21.55%
                 </strong>
               </div>
             </div>
 
             <div style={{ marginTop: '1.25rem', textAlign: 'center' }}>
-              <Link to="/analyze" style={{ fontSize: '0.825rem', color: '#38BDF8', fontWeight: 600 }}>
+              <Link to="/analyze" style={{ fontSize: '0.825rem', color: 'var(--accent-cyan)', fontWeight: 600 }}>
                 Test your own venture parameters →
               </Link>
             </div>
@@ -247,13 +247,13 @@ export default function Home() {
       {/* Feature Cards Section */}
       <section className="content-wrapper" style={{ padding: '4.5rem 1.75rem' }}>
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <span style={{ fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#38BDF8' }}>
+          <span style={{ fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--accent-cyan)' }}>
             Engine Capabilities
           </span>
-          <h2 style={{ fontSize: '2.1rem', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.02em', marginTop: '0.35rem' }}>
+          <h2 style={{ fontSize: '2.1rem', fontWeight: 800, color: 'var(--text-heading)', letterSpacing: '-0.02em', marginTop: '0.35rem' }}>
             Engineered for Precision Startup Intelligence
           </h2>
-          <p style={{ color: '#94A3B8', maxWidth: '600px', margin: '0.75rem auto 0', fontSize: '0.95rem' }}>
+          <p style={{ color: 'var(--text-muted)', maxWidth: '600px', margin: '0.75rem auto 0', fontSize: '0.95rem' }}>
             Comprehensive analytics combining supervised learning with empirical startup benchmark metrics.
           </p>
         </div>
@@ -288,15 +288,15 @@ export default function Home() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#38BDF8',
+                    color: 'var(--accent-cyan)',
                   }}
                 >
                   <Icon size={22} strokeWidth={2} />
                 </div>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#FFFFFF' }}>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-heading)' }}>
                   {feat.title}
                 </h3>
-                <p style={{ fontSize: '0.875rem', color: '#94A3B8', lineHeight: '1.6' }}>
+                <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', lineHeight: '1.6' }}>
                   {feat.desc}
                 </p>
               </div>
@@ -308,7 +308,7 @@ export default function Home() {
       {/* Workflow Section */}
       <section
         style={{
-          background: '#0D1320',
+          background: 'var(--bg-card-subtle)',
           borderTop: '1px solid var(--border-subtle)',
           borderBottom: '1px solid var(--border-subtle)',
           padding: '4.5rem 1.75rem',
@@ -316,10 +316,10 @@ export default function Home() {
       >
         <div style={{ maxWidth: '1360px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#38BDF8' }}>
+            <span style={{ fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--accent-cyan)' }}>
               Execution Lifecycle
             </span>
-            <h2 style={{ fontSize: '2.1rem', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.02em', marginTop: '0.35rem' }}>
+            <h2 style={{ fontSize: '2.1rem', fontWeight: 800, color: 'var(--text-heading)', letterSpacing: '-0.02em', marginTop: '0.35rem' }}>
               From Venture Inputs to Strategic Intelligence
             </h2>
           </div>
@@ -332,12 +332,12 @@ export default function Home() {
               position: 'relative',
             }}
           >
-            {workflowSteps.map((step, idx) => (
+            {workflowSteps.map((step) => (
               <div
                 key={step.num}
                 className="sp-card"
                 style={{
-                  background: '#111827',
+                  background: 'var(--bg-card)',
                   padding: '2rem 1.5rem',
                   display: 'flex',
                   flexDirection: 'column',
@@ -349,16 +349,16 @@ export default function Home() {
                     fontSize: '1.6rem',
                     fontWeight: 800,
                     fontFamily: 'var(--font-mono)',
-                    color: '#38BDF8',
+                    color: 'var(--accent-cyan)',
                     lineHeight: 1,
                   }}
                 >
                   {step.num}
                 </span>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#FFFFFF' }}>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-heading)' }}>
                   {step.title}
                 </h3>
-                <p style={{ fontSize: '0.85rem', color: '#94A3B8', lineHeight: '1.6' }}>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.6' }}>
                   {step.desc}
                 </p>
               </div>

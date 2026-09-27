@@ -30,19 +30,19 @@ export default function ProbabilityChart({
       return (
         <div
           style={{
-            background: '#0F172A',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border-strong)',
             padding: '0.5rem 0.85rem',
             borderRadius: '8px',
             fontSize: '0.8rem',
-            color: '#F8FAFC',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
+            color: 'var(--text-main)',
+            boxShadow: 'var(--shadow-elevated)',
           }}
         >
           <div style={{ color: item.payload.color, fontWeight: 600 }}>
             {item.name}
           </div>
-          <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '1rem', marginTop: '2px' }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '1rem', marginTop: '2px', fontWeight: 700 }}>
             {Number(item.value).toFixed(2)}%
           </div>
         </div>
@@ -76,7 +76,7 @@ export default function ProbabilityChart({
               verticalAlign="bottom"
               height={36}
               formatter={(value, entry) => (
-                <span style={{ color: '#94A3B8', fontSize: '0.785rem', marginLeft: '4px' }}>
+                <span style={{ color: 'var(--text-muted)', fontSize: '0.785rem', marginLeft: '4px' }}>
                   {value} ({Number(entry.payload.value).toFixed(1)}%)
                 </span>
               )}
@@ -101,8 +101,8 @@ export default function ProbabilityChart({
             display: 'block',
             fontSize: '1.45rem',
             fontWeight: 800,
-            fontFamily: 'JetBrains Mono, monospace',
-            color: successVal >= 50 ? '#34D399' : '#FB7185',
+            fontFamily: 'var(--font-mono)',
+            color: successVal >= 50 ? 'var(--color-success-text)' : 'var(--color-danger-text)',
             lineHeight: 1,
           }}
         >
@@ -112,7 +112,7 @@ export default function ProbabilityChart({
           style={{
             display: 'block',
             fontSize: '0.68rem',
-            color: '#64748B',
+            color: 'var(--text-dim)',
             textTransform: 'uppercase',
             letterSpacing: '0.05em',
             marginTop: '3px',

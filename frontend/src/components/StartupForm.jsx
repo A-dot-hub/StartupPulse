@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Sparkles, Calculator, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Sparkles, Calculator, AlertCircle, Edit3 } from 'lucide-react';
 
 const CATEGORY_OPTIONS = [
   'Software',
@@ -75,8 +75,18 @@ export default function StartupForm({
   submitLabel = 'Analyze Startup',
   loadingLabel = 'Analyzing Startup...',
 }) {
+  const initialCategory = initialValues.primary_category || 'Software';
+  const isInitialCustom = !CATEGORY_OPTIONS.slice(0, -1).includes(initialCategory);
+
+  const [selectedDropdown, setSelectedDropdown] = useState(
+    isInitialCustom ? 'Other' : initialCategory
+  );
+  const [customCategory, setCustomCategory] = useState(
+    isInitialCustom ? initialCategory : ''
+  );
+
   const [formData, setFormData] = useState({
-    primary_category: initialValues.primary_category || 'Software',
+    primary_category: initialCategory,
     funding_total_usd: initialValues.funding_total_usd ?? 5000000,
     country_code: initialValues.country_code || 'USA',
     state_code: initialValues.state_code || 'CA',
@@ -90,11 +100,31 @@ export default function StartupForm({
 
   const [errors, setErrors] = useState({});
 
+  // Sync if initialValues change externally
+  useEffect(() => {
+    if (initialValues.primary_category) {
+      const isCustom = !CATEGORY_OPTIONS.slice(0, -1).includes(initialValues.primary_category);
+      if (isCustom) {
+        setSelectedDropdown('Other');
+        setCustomCategory(initialValues.primary_category);
+      } else {
+        setSelectedDropdown(initialValues.primary_category);
+        setCustomCategory('');
+      }
+    }
+  }, [initialValues.primary_category]);
+
   const validate = () => {
     const errs = {};
 
-    if (!formData.primary_category || !formData.primary_category.trim()) {
-      errs.primary_category = 'Primary category is required.';
+    const effectiveCategory =
+      selectedDropdown === 'Other' ? customCategory.trim() : formData.primary_category.trim();
+
+    if (!effectiveCategory) {
+      errs.primary_category =
+        selectedDropdown === 'Other'
+          ? 'Please enter your custom category.'
+          : 'Primary category is required.';
     }
 
     if (
@@ -142,6 +172,45 @@ export default function StartupForm({
     return Object.keys(errs).length === 0;
   };
 
+  const handleDropdownCategoryChange = (val) => {
+    setSelectedDropdown(val);
+    if (val === 'Other') {
+      setFormData((prev) => ({
+        ...prev,
+        primary_category: customCategory.trim(),
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        primary_category: val,
+      }));
+    }
+
+    if (errors.primary_category) {
+      setErrors((prev) => {
+        const updated = { ...prev };
+        delete updated.primary_category;
+        return updated;
+      });
+    }
+  };
+
+  const handleCustomCategoryInput = (val) => {
+    setCustomCategory(val);
+    setFormData((prev) => ({
+      ...prev,
+      primary_category: val,
+    }));
+
+    if (errors.primary_category && val.trim()) {
+      setErrors((prev) => {
+        const updated = { ...prev };
+        delete updated.primary_category;
+        return updated;
+      });
+    }
+  };
+
   const handleChange = (field, value) => {
     setFormData((prev) => ({
       ...prev,
@@ -165,6 +234,14 @@ export default function StartupForm({
   };
 
   const loadPreset = (preset) => {
+    const cat = preset.data.primary_category;
+    if (CATEGORY_OPTIONS.slice(0, -1).includes(cat)) {
+      setSelectedDropdown(cat);
+      setCustomCategory('');
+    } else {
+      setSelectedDropdown('Other');
+      setCustomCategory(cat);
+    }
     setFormData({ ...preset.data });
     setErrors({});
   };
@@ -174,7 +251,13 @@ export default function StartupForm({
     if (isLoading) return;
 
     if (validate()) {
-      onSubmit(formData);
+      const finalCategory =
+        selectedDropdown === 'Other' ? customCategory.trim() : formData.primary_category.trim();
+
+      onSubmit({
+        ...formData,
+        primary_category: finalCategory,
+      });
     }
   };
 
@@ -205,21 +288,89 @@ export default function StartupForm({
         <div className="form-group">
           <label className="form-label" htmlFor="primary_category">
             Primary Category *
+            {selectedDropdown === 'Other' && (
+              <span className="form-label-hint" style={{ color: 'var(--accent-cyan)' }}>
+                Custom Entry
+              </span>
+            )}
           </label>
           <select
             id="primary_category"
             className="form-select"
-            value={formData.primary_category}
-            onChange={(e) => handleChange('primary_category', e.target.value)}
+            value={selectedDropdown}
+            onChange={(e) => handleDropdownCategoryChange(e.target.value)}
           >
             {CATEGORY_OPTIONS.map((cat) => (
               <option key={cat} value={cat}>
-                {cat}
+                {cat === 'Other' ? 'Other (Enter custom category...)' : cat}
               </option>
             ))}
           </select>
-          {errors.primary_category && (
+          {errors.primary_category && selectedDropdown !== 'Other' && (
             <span className="form-error-msg">{errors.primary_category}</span>
+          )}
+
+          {/* Quick toggle if category is not listed */}
+          {selectedDropdown !== 'Other' && (
+            <div style={{ marginTop: '0.35rem', textAlign: 'right' }}>
+              <button
+                type="button"
+                className="autocalc-btn"
+                onClick={() => handleDropdownCategoryChange('Other')}
+                style={{ fontSize: '0.75rem' }}
+                title="Enter your custom startup category"
+              >
+                Category not in list? Click Other to enter
+              </button>
+            </div>
+          )}
+
+          {/* If 'Other' is selected, open custom category text box */}
+          {selectedDropdown === 'Other' && (
+            <div style={{ marginTop: '0.65rem' }}>
+              <div style={{ position: 'relative' }}>
+                <input
+                  id="custom_category_input"
+                  type="text"
+                  className="form-input"
+                  placeholder="Enter your custom category (e.g. AgriTech, Web3, Space)..."
+                  value={customCategory}
+                  onChange={(e) => handleCustomCategoryInput(e.target.value)}
+                  autoFocus
+                  style={{
+                    borderColor: errors.primary_category ? 'var(--color-danger)' : 'var(--border-focus)',
+                    paddingRight: '2.5rem',
+                  }}
+                />
+                <Edit3
+                  size={14}
+                  style={{
+                    position: 'absolute',
+                    right: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: 'var(--text-dim)',
+                    pointerEvents: 'none',
+                  }}
+                />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.35rem' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>
+                  Type your custom industry sector
+                </span>
+                <button
+                  type="button"
+                  onClick={() => handleDropdownCategoryChange('Software')}
+                  className="autocalc-btn"
+                  style={{ fontSize: '0.75rem' }}
+                >
+                  Choose standard category
+                </button>
+              </div>
+              {errors.primary_category && (
+                <span className="form-error-msg">{errors.primary_category}</span>
+              )}
+            </div>
           )}
         </div>
 

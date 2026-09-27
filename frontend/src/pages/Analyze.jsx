@@ -81,20 +81,20 @@ export default function Analyze() {
           style={{
             marginTop: '2rem',
             padding: '1.25rem 1.5rem',
-            background: 'rgba(255, 255, 255, 0.02)',
+            background: 'var(--bg-card-subtle)',
             border: '1px solid var(--border-subtle)',
             borderRadius: '10px',
             display: 'flex',
             alignItems: 'flex-start',
             gap: '0.75rem',
-            color: '#94A3B8',
+            color: 'var(--text-muted)',
             fontSize: '0.825rem',
             lineHeight: '1.6',
           }}
         >
-          <HelpCircle size={18} color="#38BDF8" style={{ flexShrink: 0, marginTop: '1px' }} />
+          <HelpCircle size={18} color="var(--accent-cyan)" style={{ flexShrink: 0, marginTop: '1px' }} />
           <div>
-            <strong style={{ color: '#F8FAFC' }}>Evaluation Notice:</strong> All submissions are processed through the trained StartupPulse XGBoost pipeline. The model assesses non-linear interactions across capital efficiency, startup age, rounds, and geographic ecosystem liquidity to determine survival probability.
+            <strong style={{ color: 'var(--text-heading)' }}>Evaluation Notice:</strong> All submissions are processed through the trained StartupPulse XGBoost pipeline. The model assesses non-linear interactions across capital efficiency, startup age, rounds, and geographic ecosystem liquidity to determine survival probability.
           </div>
         </div>
       </div>

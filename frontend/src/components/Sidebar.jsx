@@ -30,12 +30,13 @@ export default function Sidebar({ className = '' }) {
       style={{
         width: '240px',
         flexShrink: 0,
-        background: '#0D1320',
+        background: 'var(--sidebar-bg)',
         borderRight: '1px solid var(--border-subtle)',
         padding: '1.5rem 1rem',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
+        transition: 'background 0.2s ease',
       }}
     >
       <div>
@@ -71,8 +72,8 @@ export default function Sidebar({ className = '' }) {
                   borderRadius: '8px',
                   fontSize: '0.85rem',
                   fontWeight: isActive ? 600 : 500,
-                  color: isActive ? '#38BDF8' : '#94A3B8',
-                  background: isActive ? 'rgba(56, 189, 248, 0.08)' : 'transparent',
+                  color: isActive ? 'var(--accent-cyan)' : 'var(--text-muted)',
+                  background: isActive ? 'rgba(56, 189, 248, 0.1)' : 'transparent',
                   transition: 'all 0.15s ease',
                 })}
               >
@@ -87,7 +88,7 @@ export default function Sidebar({ className = '' }) {
       {/* Backend connection summary */}
       <div
         style={{
-          background: 'rgba(255, 255, 255, 0.02)',
+          background: 'var(--bg-card-subtle)',
           border: '1px solid var(--border-subtle)',
           borderRadius: '8px',
           padding: '0.85rem',
@@ -100,11 +101,11 @@ export default function Sidebar({ className = '' }) {
               backendHealth.status === 'healthy' ? 'healthy' : 'unreachable'
             }`}
           />
-          <span style={{ fontWeight: 600, color: '#F8FAFC' }}>
+          <span style={{ fontWeight: 600, color: 'var(--text-heading)' }}>
             FastAPI Server
           </span>
         </div>
-        <div style={{ color: '#64748B', fontFamily: 'var(--font-mono)', fontSize: '0.7rem' }}>
+        <div style={{ color: 'var(--text-dim)', fontFamily: 'var(--font-mono)', fontSize: '0.7rem' }}>
           http://127.0.0.1:8000
         </div>
       </div>

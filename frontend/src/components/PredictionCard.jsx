@@ -25,13 +25,13 @@ export default function PredictionCard({ predictionData }) {
           <div className="prediction-outcome-tag">
             {isSuccess ? (
               <>
-                <CheckCircle2 size={16} color="#34D399" aria-hidden="true" />
-                <span style={{ color: '#34D399' }}>AI Prediction Model Result</span>
+                <CheckCircle2 size={16} color="var(--color-success)" aria-hidden="true" />
+                <span style={{ color: 'var(--color-success-text)' }}>AI Prediction Model Result</span>
               </>
             ) : (
               <>
-                <XCircle size={16} color="#FB7185" aria-hidden="true" />
-                <span style={{ color: '#FB7185' }}>AI Prediction Model Result</span>
+                <XCircle size={16} color="var(--color-danger)" aria-hidden="true" />
+                <span style={{ color: 'var(--color-danger-text)' }}>AI Prediction Model Result</span>
               </>
             )}
           </div>
@@ -79,7 +79,7 @@ export default function PredictionCard({ predictionData }) {
             />
           </div>
 
-          <p style={{ color: '#94A3B8', fontSize: '0.875rem', lineHeight: '1.6' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', lineHeight: '1.6' }}>
             {isSuccess
               ? `The XGBoost classifier projects high commercial viability (${formatPercentage(
                   successProb
@@ -98,9 +98,9 @@ export default function PredictionCard({ predictionData }) {
             alignItems: 'center',
             justifyContent: 'center',
             padding: '1.5rem',
-            background: 'rgba(255, 255, 255, 0.02)',
+            background: 'var(--bg-card-subtle)',
             borderRadius: '12px',
-            border: '1px solid rgba(255, 255, 255, 0.06)',
+            border: '1px solid var(--border-subtle)',
             textAlign: 'center',
           }}
         >
@@ -109,31 +109,31 @@ export default function PredictionCard({ predictionData }) {
               width: '64px',
               height: '64px',
               borderRadius: '50%',
-              background: isSuccess ? 'rgba(16, 185, 129, 0.15)' : 'rgba(244, 63, 94, 0.15)',
+              background: isSuccess ? 'var(--color-success-bg)' : 'var(--color-danger-bg)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               marginBottom: '1rem',
-              color: isSuccess ? '#34D399' : '#FB7185',
+              color: isSuccess ? 'var(--color-success-text)' : 'var(--color-danger-text)',
             }}
           >
             {isSuccess ? <TrendingUp size={32} /> : <AlertTriangle size={32} />}
           </div>
-          <span style={{ fontSize: '0.785rem', color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <span style={{ fontSize: '0.785rem', color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             Model Confidence
           </span>
           <span
             style={{
               fontSize: '1.75rem',
               fontWeight: 800,
-              fontFamily: 'JetBrains Mono, monospace',
-              color: '#F8FAFC',
+              fontFamily: 'var(--font-mono)',
+              color: 'var(--text-heading)',
               marginTop: '0.2rem',
             }}
           >
             {formatPercentage(Math.max(successProb, failureProb))}
           </span>
-          <span style={{ fontSize: '0.8rem', color: '#94A3B8', marginTop: '0.25rem' }}>
+          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
             Evaluation Model: XGBoost Classifier
           </span>
         </div>

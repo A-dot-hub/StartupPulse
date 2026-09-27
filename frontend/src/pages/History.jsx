@@ -160,17 +160,17 @@ export default function History() {
                       onClick={() => handleRowClick(item)}
                       style={{ cursor: 'pointer' }}
                     >
-                      <td style={{ color: '#94A3B8', fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}>
+                      <td style={{ color: 'var(--text-dim)', fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}>
                         {formatDate(item.created_at)}
                       </td>
-                      <td style={{ fontWeight: 600, color: '#F8FAFC' }}>
+                      <td style={{ fontWeight: 600, color: 'var(--text-heading)' }}>
                         {item.input?.primary_category || 'Software'}
                       </td>
                       <td>
                         <span
                           style={{
                             fontWeight: 700,
-                            color: isSuccess ? '#34D399' : '#FB7185',
+                            color: isSuccess ? 'var(--color-success-text)' : 'var(--color-danger-text)',
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: '0.35rem',
@@ -179,17 +179,17 @@ export default function History() {
                           {item.prediction || (isSuccess ? 'Successful Outcome' : 'Failure')}
                         </span>
                       </td>
-                      <td style={{ fontFamily: 'var(--font-mono)', color: '#34D399', fontWeight: 600 }}>
+                      <td style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-success-text)', fontWeight: 600 }}>
                         {formatPercentage(item.success_probability)}
                       </td>
-                      <td style={{ fontFamily: 'var(--font-mono)', color: '#FB7185', fontWeight: 600 }}>
+                      <td style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-danger-text)', fontWeight: 600 }}>
                         {formatPercentage(item.failure_probability)}
                       </td>
                       <td>
                         <RiskBadge risk={item.risk_level} />
                       </td>
                       <td>
-                        <span style={{ fontSize: '0.8rem', color: '#94A3B8', fontFamily: 'var(--font-mono)' }}>
+                        <span style={{ fontSize: '0.8rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>
                           {item.model || 'XGBoost'}
                         </span>
                       </td>
@@ -240,14 +240,14 @@ export default function History() {
                 <div>
                   <div style={{ marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid var(--border-subtle)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                      <span style={{ fontSize: '0.75rem', color: '#64748B', fontFamily: 'var(--font-mono)' }}>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>
                         Record ID: {selectedPrediction.id}
                       </span>
                     </div>
-                    <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#FFFFFF' }}>
+                    <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-heading)' }}>
                       {selectedPrediction.input?.primary_category || 'Startup'} Assessment Detail
                     </h2>
-                    <span style={{ fontSize: '0.8rem', color: '#94A3B8' }}>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                       Timestamp: {formatDate(selectedPrediction.created_at)}
                     </span>
                   </div>
@@ -255,7 +255,7 @@ export default function History() {
                   {/* Outcome Highlight */}
                   <div
                     style={{
-                      background: 'rgba(255, 255, 255, 0.03)',
+                      background: 'var(--bg-card-subtle)',
                       border: '1px solid var(--border-subtle)',
                       borderRadius: '12px',
                       padding: '1.25rem',
@@ -266,7 +266,7 @@ export default function History() {
                     }}
                   >
                     <div>
-                      <span style={{ fontSize: '0.75rem', color: '#64748B', textTransform: 'uppercase' }}>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)', textTransform: 'uppercase' }}>
                         Prediction Outcome
                       </span>
                       <div
@@ -276,8 +276,8 @@ export default function History() {
                           color:
                             selectedPrediction.prediction === 'Successful Outcome' ||
                             selectedPrediction.prediction_class === 1
-                              ? '#34D399'
-                              : '#FB7185',
+                              ? 'var(--color-success-text)'
+                              : 'var(--color-danger-text)',
                         }}
                       >
                         {selectedPrediction.prediction}
@@ -290,26 +290,26 @@ export default function History() {
                   <div className="grid-2" style={{ marginBottom: '1.5rem' }}>
                     <div className="stat-card">
                       <span className="stat-card-label">Success Probability</span>
-                      <div className="stat-card-value" style={{ color: '#34D399' }}>
+                      <div className="stat-card-value" style={{ color: 'var(--color-success-text)' }}>
                         {formatPercentage(selectedPrediction.success_probability)}
                       </div>
                     </div>
                     <div className="stat-card">
                       <span className="stat-card-label">Failure Probability</span>
-                      <div className="stat-card-value" style={{ color: '#FB7185' }}>
+                      <div className="stat-card-value" style={{ color: 'var(--color-danger-text)' }}>
                         {formatPercentage(selectedPrediction.failure_probability)}
                       </div>
                     </div>
                   </div>
 
                   {/* Input parameters breakdown */}
-                  <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#FFFFFF', marginBottom: '0.75rem' }}>
+                  <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-heading)', marginBottom: '0.75rem' }}>
                     Startup Characteristics Supplied
                   </h4>
 
                   <div
                     style={{
-                      background: 'rgba(0,0,0,0.2)',
+                      background: 'var(--bg-card-subtle)',
                       border: '1px solid var(--border-subtle)',
                       borderRadius: '8px',
                       padding: '1rem',
@@ -320,57 +320,57 @@ export default function History() {
                     }}
                   >
                     <div>
-                      <span style={{ color: '#64748B', display: 'block', fontSize: '0.75rem' }}>Category</span>
-                      <span style={{ color: '#F8FAFC', fontWeight: 600 }}>
+                      <span style={{ color: 'var(--text-dim)', display: 'block', fontSize: '0.75rem' }}>Category</span>
+                      <span style={{ color: 'var(--text-heading)', fontWeight: 600 }}>
                         {selectedPrediction.input?.primary_category || 'N/A'}
                       </span>
                     </div>
 
                     <div>
-                      <span style={{ color: '#64748B', display: 'block', fontSize: '0.75rem' }}>Funding Total</span>
-                      <span style={{ color: '#F8FAFC', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
+                      <span style={{ color: 'var(--text-dim)', display: 'block', fontSize: '0.75rem' }}>Funding Total</span>
+                      <span style={{ color: 'var(--text-heading)', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
                         {formatCurrency(selectedPrediction.input?.funding_total_usd)}
                       </span>
                     </div>
 
                     <div>
-                      <span style={{ color: '#64748B', display: 'block', fontSize: '0.75rem' }}>Funding Rounds</span>
-                      <span style={{ color: '#F8FAFC', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
+                      <span style={{ color: 'var(--text-dim)', display: 'block', fontSize: '0.75rem' }}>Funding Rounds</span>
+                      <span style={{ color: 'var(--text-heading)', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
                         {selectedPrediction.input?.funding_rounds} rounds
                       </span>
                     </div>
 
                     <div>
-                      <span style={{ color: '#64748B', display: 'block', fontSize: '0.75rem' }}>Per Round</span>
-                      <span style={{ color: '#F8FAFC', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
+                      <span style={{ color: 'var(--text-dim)', display: 'block', fontSize: '0.75rem' }}>Per Round</span>
+                      <span style={{ color: 'var(--text-heading)', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
                         {formatCurrency(selectedPrediction.input?.funding_per_round)}
                       </span>
                     </div>
 
                     <div>
-                      <span style={{ color: '#64748B', display: 'block', fontSize: '0.75rem' }}>Startup Age</span>
-                      <span style={{ color: '#F8FAFC', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
+                      <span style={{ color: 'var(--text-dim)', display: 'block', fontSize: '0.75rem' }}>Startup Age</span>
+                      <span style={{ color: 'var(--text-heading)', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
                         {selectedPrediction.input?.startup_age} years
                       </span>
                     </div>
 
                     <div>
-                      <span style={{ color: '#64748B', display: 'block', fontSize: '0.75rem' }}>Years to 1st Funding</span>
-                      <span style={{ color: '#F8FAFC', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
+                      <span style={{ color: 'var(--text-dim)', display: 'block', fontSize: '0.75rem' }}>Years to 1st Funding</span>
+                      <span style={{ color: 'var(--text-heading)', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
                         {selectedPrediction.input?.years_to_first_funding} years
                       </span>
                     </div>
 
                     <div>
-                      <span style={{ color: '#64748B', display: 'block', fontSize: '0.75rem' }}>Location</span>
-                      <span style={{ color: '#F8FAFC', fontWeight: 600 }}>
+                      <span style={{ color: 'var(--text-dim)', display: 'block', fontSize: '0.75rem' }}>Location</span>
+                      <span style={{ color: 'var(--text-heading)', fontWeight: 600 }}>
                         {selectedPrediction.input?.city || 'Unknown'}, {selectedPrediction.input?.state_code || ''} ({selectedPrediction.input?.country_code || 'USA'})
                       </span>
                     </div>
 
                     <div>
-                      <span style={{ color: '#64748B', display: 'block', fontSize: '0.75rem' }}>Region</span>
-                      <span style={{ color: '#F8FAFC', fontWeight: 600 }}>
+                      <span style={{ color: 'var(--text-dim)', display: 'block', fontSize: '0.75rem' }}>Region</span>
+                      <span style={{ color: 'var(--text-heading)', fontWeight: 600 }}>
                         {selectedPrediction.input?.region || 'Unknown'}
                       </span>
                     </div>

@@ -24,22 +24,23 @@
   font-size: 0.8rem;
   font-weight: 500;
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--bg-card-subtle);
   border: 1px solid var(--border-subtle);
   color: var(--text-muted);
   transition: all 0.15s ease;
+  cursor: pointer;
 }
 
 .preset-chip:hover {
   background: rgba(56, 189, 248, 0.1);
-  color: #ffffff;
+  color: var(--accent-cyan);
   border-color: rgba(56, 189, 248, 0.3);
 }
 
 .form-section-title {
   font-size: 0.95rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--text-heading);
   letter-spacing: -0.01em;
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
@@ -79,7 +80,7 @@
 }
 
 .autocalc-btn:hover {
-  color: #7dd3fc;
+  color: var(--accent-primary-hover);
 }
 
 .form-actions {

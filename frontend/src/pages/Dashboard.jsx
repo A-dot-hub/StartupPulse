@@ -233,15 +233,17 @@ export default function Dashboard() {
             <div className="chart-body">
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={comparisonChartData} margin={{ top: 10, right: 10, left: -20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                  <XAxis dataKey="name" stroke="#64748B" fontSize={12} tickLine={false} />
-                  <YAxis stroke="#64748B" fontSize={12} domain={[60, 100]} tickLine={false} unit="%" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" />
+                  <XAxis dataKey="name" stroke="var(--text-dim)" fontSize={12} tickLine={false} />
+                  <YAxis stroke="var(--text-dim)" fontSize={12} domain={[60, 100]} tickLine={false} unit="%" />
                   <Tooltip
                     contentStyle={{
-                      background: '#0F172A',
-                      border: '1px solid rgba(255,255,255,0.15)',
+                      background: 'var(--bg-card)',
+                      border: '1px solid var(--border-strong)',
                       borderRadius: '8px',
                       fontSize: '0.8rem',
+                      color: 'var(--text-main)',
+                      boxShadow: 'var(--shadow-elevated)',
                     }}
                     formatter={(val) => [`${val}%`, '']}
                   />
@@ -270,9 +272,9 @@ export default function Dashboard() {
             <div className="chart-body">
               <ResponsiveContainer width="100%" height={300}>
                 <RadarChart data={radarData}>
-                  <PolarGrid stroke="rgba(255,255,255,0.1)" />
-                  <PolarAngleAxis dataKey="metric" stroke="#94A3B8" fontSize={11} />
-                  <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="#64748B" fontSize={10} />
+                  <PolarGrid stroke="var(--border-subtle)" />
+                  <PolarAngleAxis dataKey="metric" stroke="var(--text-muted)" fontSize={11} />
+                  <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="var(--text-dim)" fontSize={10} />
                   <Radar
                     name="XGBoost Benchmark"
                     dataKey="value"
@@ -282,10 +284,12 @@ export default function Dashboard() {
                   />
                   <Tooltip
                     contentStyle={{
-                      background: '#0F172A',
-                      border: '1px solid rgba(255,255,255,0.15)',
+                      background: 'var(--bg-card)',
+                      border: '1px solid var(--border-strong)',
                       borderRadius: '8px',
                       fontSize: '0.8rem',
+                      color: 'var(--text-main)',
+                      boxShadow: 'var(--shadow-elevated)',
                     }}
                     formatter={(val) => [`${val}%`, 'Score']}
                   />
@@ -299,20 +303,20 @@ export default function Dashboard() {
         <div className="sp-card">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border-subtle)' }}>
             <div>
-              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#38BDF8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--accent-cyan)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                 Global Model Explanation
               </span>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#FFFFFF', marginTop: '0.2rem' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-heading)', marginTop: '0.2rem' }}>
                 Global Feature Importance
               </h3>
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#64748B', fontFamily: 'var(--font-mono)' }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>
               Source: ml/models/shap/feature_importance.csv
             </div>
           </div>
 
-          <p style={{ fontSize: '0.875rem', color: '#94A3B8', marginBottom: '1.25rem', maxWidth: '75ch', lineHeight: '1.6' }}>
-            Answers: <strong style={{ color: '#F8FAFC' }}>"What features generally influence this model across the entire dataset?"</strong> Unlike the Individual Prediction Explanation on the Results page (which explains a specific startup's score), this view captures overall model sensitivity across all historical startup benchmarks using mean absolute SHAP values.
+          <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1.25rem', maxWidth: '75ch', lineHeight: '1.6' }}>
+            Answers: <strong style={{ color: 'var(--text-heading)' }}>"What features generally influence this model across the entire dataset?"</strong> Unlike the Individual Prediction Explanation on the Results page (which explains a specific startup's score), this view captures overall model sensitivity across all historical startup benchmarks using mean absolute SHAP values.
           </p>
 
           <div style={{ width: '100%', height: 380 }}>
@@ -337,22 +341,24 @@ export default function Dashboard() {
                 layout="vertical"
                 margin={{ top: 5, right: 30, left: 90, bottom: 5 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" horizontal={false} />
-                <XAxis type="number" stroke="#64748B" fontSize={11} tickLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" horizontal={false} />
+                <XAxis type="number" stroke="var(--text-dim)" fontSize={11} tickLine={false} />
                 <YAxis
                   type="category"
                   dataKey="feature"
-                  stroke="#94A3B8"
+                  stroke="var(--text-muted)"
                   fontSize={12}
                   tickLine={false}
                   width={130}
                 />
                 <Tooltip
                   contentStyle={{
-                    background: '#0F172A',
-                    border: '1px solid rgba(255,255,255,0.15)',
+                    background: 'var(--bg-card)',
+                    border: '1px solid var(--border-strong)',
                     borderRadius: '8px',
                     fontSize: '0.8rem',
+                    color: 'var(--text-main)',
+                    boxShadow: 'var(--shadow-elevated)',
                   }}
                   formatter={(val) => [val, 'Mean |SHAP| Value']}
                 />
@@ -365,14 +371,14 @@ export default function Dashboard() {
         {/* Features Used Section */}
         <div className="sp-card">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-            <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#FFFFFF' }}>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-heading)' }}>
               Features Used ({featuresList.length})
             </h3>
-            <span style={{ fontSize: '0.75rem', color: '#64748B', fontFamily: 'var(--font-mono)' }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>
               POST /predict Schema
             </span>
           </div>
-          <p style={{ fontSize: '0.85rem', color: '#94A3B8', marginBottom: '1rem' }}>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
             The machine learning pipeline evaluates the following 10 dimensional features during inference:
           </p>
 
@@ -389,7 +395,7 @@ export default function Dashboard() {
         {/* About the Model Section */}
         <div className="about-model-box">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.75rem' }}>
-            <HelpCircle size={20} color="#38BDF8" />
+            <HelpCircle size={20} color="var(--accent-cyan)" />
             <h3 style={{ margin: 0 }}>About the Model</h3>
           </div>
           <p>
@@ -401,19 +407,19 @@ export default function Dashboard() {
               gap: '2rem',
               flexWrap: 'wrap',
               fontSize: '0.825rem',
-              color: '#94A3B8',
+              color: 'var(--text-muted)',
               paddingTop: '0.75rem',
               borderTop: '1px solid var(--border-subtle)',
             }}
           >
             <div>
-              <strong style={{ color: '#F8FAFC' }}>Supervised Learning:</strong> Binary outcome (Successful Outcome vs Failure)
+              <strong style={{ color: 'var(--text-heading)' }}>Supervised Learning:</strong> Binary outcome (Successful Outcome vs Failure)
             </div>
             <div>
-              <strong style={{ color: '#F8FAFC' }}>Calibration:</strong> Probabilistic scoring via <code>predict_proba</code>
+              <strong style={{ color: 'var(--text-heading)' }}>Calibration:</strong> Probabilistic scoring via <code>predict_proba</code>
             </div>
             <div>
-              <strong style={{ color: '#F8FAFC' }}>Risk Stratification:</strong> Low (≥70%), Medium (45–69%), High (&lt;45%)
+              <strong style={{ color: 'var(--text-heading)' }}>Risk Stratification:</strong> Low (≥70%), Medium (45–69%), High (&lt;45%)
             </div>
           </div>
         </div>

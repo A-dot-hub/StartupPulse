@@ -11,6 +11,7 @@ import Simulator from './pages/Simulator';
 import History from './pages/History';
 import NotFound from './pages/NotFound';
 
+import { ThemeProvider } from './context/ThemeContext';
 import { PredictionProvider } from './context/PredictionContext';
 
 import './styles/global.css';
@@ -23,22 +24,24 @@ import './styles/shap.css';
 
 export default function App() {
   return (
-    <PredictionProvider>
-      <div className="app-container">
-        <Navbar />
-        <main className="main-content">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/analyze" element={<Analyze />} />
-            <Route path="/results" element={<Results />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/simulator" element={<Simulator />} />
-            <Route path="/history" element={<History />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
-    </PredictionProvider>
+    <ThemeProvider>
+      <PredictionProvider>
+        <div className="app-container">
+          <Navbar />
+          <main className="main-content">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/analyze" element={<Analyze />} />
+              <Route path="/results" element={<Results />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/simulator" element={<Simulator />} />
+              <Route path="/history" element={<History />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </main>
+          <Footer />
+        </div>
+      </PredictionProvider>
+    </ThemeProvider>
   );
 }

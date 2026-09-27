@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
-import { Activity, Menu, X, ArrowUpRight, RefreshCw } from 'lucide-react';
+import { Activity, Menu, X, ArrowUpRight, RefreshCw, Sun, Moon } from 'lucide-react';
 import { usePrediction } from '../context/PredictionContext';
+import { useTheme } from '../context/ThemeContext';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { backendHealth, checkConnection } = usePrediction();
+  const { isLightMode, toggleTheme } = useTheme();
   const [isPinging, setIsPinging] = useState(false);
 
   const handlePing = async (e) => {
@@ -53,6 +55,17 @@ export default function Navbar() {
 
         {/* Zone 3: 1-2 primary actions */}
         <div className="nav-actions">
+          {/* Light / Dark Mode Toggle */}
+          <button
+            type="button"
+            className="theme-toggle-btn"
+            onClick={toggleTheme}
+            aria-label={isLightMode ? 'Switch to dark mode' : 'Switch to light mode'}
+            title={isLightMode ? 'Switch to dark mode' : 'Switch to light mode'}
+          >
+            {isLightMode ? <Moon size={16} /> : <Sun size={16} />}
+          </button>
+
           {/* Backend Health Check Pill */}
           <button
             type="button"
@@ -117,11 +130,20 @@ export default function Navbar() {
               <ArrowUpRight size={14} opacity={0.6} />
             </NavLink>
           ))}
-          <div style={{ paddingTop: '0.75rem' }}>
+          <div style={{ display: 'flex', gap: '0.75rem', paddingTop: '0.75rem' }}>
+            <button
+              type="button"
+              className="btn-secondary"
+              style={{ flex: 1, padding: '0.65rem' }}
+              onClick={toggleTheme}
+            >
+              {isLightMode ? <Moon size={16} /> : <Sun size={16} />}
+              <span>{isLightMode ? 'Dark Theme' : 'Light Theme'}</span>
+            </button>
             <Link
               to="/analyze"
               className="btn-primary"
-              style={{ width: '100%' }}
+              style={{ flex: 2 }}
               onClick={() => setMobileMenuOpen(false)}
             >
               Analyze Startup

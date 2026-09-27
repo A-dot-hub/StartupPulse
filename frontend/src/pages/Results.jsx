@@ -111,10 +111,10 @@ export default function Results() {
         <div className="grid-2">
           <div className="sp-card" style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#FFFFFF' }}>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-heading)' }}>
                 Probability Distribution
               </h3>
-              <span style={{ fontSize: '0.75rem', color: '#64748B', fontFamily: 'var(--font-mono)' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>
                 Recharts Analytics
               </span>
             </div>
@@ -133,13 +133,13 @@ export default function Results() {
           <div className="sp-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#FFFFFF' }}>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-heading)' }}>
                   Execution Telemetry
                 </h3>
                 <span
                   style={{
                     fontSize: '0.75rem',
-                    color: latestPrediction.saved_to_database ? '#34D399' : '#F59E0B',
+                    color: latestPrediction.saved_to_database ? 'var(--color-success-text)' : 'var(--color-warning-text)',
                     fontFamily: 'var(--font-mono)',
                     display: 'flex',
                     alignItems: 'center',
@@ -153,22 +153,22 @@ export default function Results() {
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid var(--border-subtle)', fontSize: '0.85rem' }}>
-                  <span style={{ color: '#94A3B8' }}>Classifier Architecture</span>
-                  <span style={{ color: '#F8FAFC', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>XGBoost 3.2</span>
+                  <span style={{ color: 'var(--text-muted)' }}>Classifier Architecture</span>
+                  <span style={{ color: 'var(--text-main)', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>XGBoost 3.2</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid var(--border-subtle)', fontSize: '0.85rem' }}>
-                  <span style={{ color: '#94A3B8' }}>Input Features Evaluated</span>
-                  <span style={{ color: '#F8FAFC', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>10 Features</span>
+                  <span style={{ color: 'var(--text-muted)' }}>Input Features Evaluated</span>
+                  <span style={{ color: 'var(--text-main)', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>10 Features</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid var(--border-subtle)', fontSize: '0.85rem' }}>
-                  <span style={{ color: '#94A3B8' }}>Prediction ID</span>
-                  <span style={{ color: '#38BDF8', fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}>
+                  <span style={{ color: 'var(--text-muted)' }}>Prediction ID</span>
+                  <span style={{ color: 'var(--accent-cyan)', fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}>
                     {latestPrediction.prediction_id || 'local-session-id'}
                   </span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', fontSize: '0.85rem' }}>
-                  <span style={{ color: '#94A3B8' }}>Evaluated At</span>
-                  <span style={{ color: '#94A3B8', fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}>
+                  <span style={{ color: 'var(--text-muted)' }}>Evaluated At</span>
+                  <span style={{ color: 'var(--text-dim)', fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}>
                     {new Date(latestPrediction.timestamp || Date.now()).toLocaleTimeString()}
                   </span>
                 </div>

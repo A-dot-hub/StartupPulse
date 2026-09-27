@@ -19,13 +19,13 @@ export default function SHAPExplanation({
       <div className="shap-card" style={{ textAlign: 'center', padding: '2.5rem 1.5rem' }}>
         <Loader2
           size={28}
-          color="#38BDF8"
+          color="var(--accent-cyan)"
           style={{ animation: 'spin 1s linear infinite', margin: '0 auto 0.75rem' }}
         />
-        <h4 style={{ fontSize: '1rem', fontWeight: 600, color: '#F8FAFC', marginBottom: '0.2rem' }}>
+        <h4 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-heading)', marginBottom: '0.2rem' }}>
           Analyzing prediction...
         </h4>
-        <p style={{ fontSize: '0.8rem', color: '#94A3B8' }}>
+        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
           Generating AI explanation with SHAP TreeExplainer...
         </p>
       </div>
@@ -34,14 +34,14 @@ export default function SHAPExplanation({
 
   if (error) {
     return (
-      <div className="shap-card" style={{ borderColor: 'rgba(244, 63, 94, 0.25)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#FB7185' }}>
+      <div className="shap-card" style={{ borderColor: 'var(--color-danger-border)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--color-danger-text)' }}>
           <AlertCircle size={20} />
           <div>
-            <strong style={{ display: 'block', fontSize: '0.9rem', color: '#FFFFFF' }}>
+            <strong style={{ display: 'block', fontSize: '0.9rem', color: 'var(--text-heading)' }}>
               Explanation Notice
             </strong>
-            <p style={{ fontSize: '0.8rem', color: '#CBD5E1', marginTop: '0.15rem' }}>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
               Prediction generated successfully. Detailed explanation is temporarily unavailable.
             </p>
           </div>

@@ -193,7 +193,8 @@ export default function Simulator() {
         <div
           className="sp-card"
           style={{
-            background: 'linear-gradient(135deg, #131b2e 0%, #0d1424 100%)',
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border-strong)',
             padding: '1.5rem 2rem',
           }}
         >
@@ -206,10 +207,10 @@ export default function Simulator() {
             }}
           >
             <div>
-              <span style={{ fontSize: '0.75rem', color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Current Success Probability
               </span>
-              <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#F8FAFC', fontFamily: 'var(--font-mono)' }}>
+              <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--text-heading)', fontFamily: 'var(--font-mono)' }}>
                 {formatPercentage(currentSuccess)}
               </div>
               <div style={{ marginTop: '0.25rem' }}>
@@ -218,14 +219,14 @@ export default function Simulator() {
             </div>
 
             <div>
-              <span style={{ fontSize: '0.75rem', color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Simulated Success Probability
               </span>
               <div
                 style={{
                   fontSize: '1.85rem',
                   fontWeight: 800,
-                  color: modifiedResult ? (delta >= 0 ? '#34D399' : '#FB7185') : '#94A3B8',
+                  color: modifiedResult ? (delta >= 0 ? 'var(--color-success-text)' : 'var(--color-danger-text)') : 'var(--text-dim)',
                   fontFamily: 'var(--font-mono)',
                 }}
               >
@@ -237,7 +238,7 @@ export default function Simulator() {
             </div>
 
             <div>
-              <span style={{ fontSize: '0.75rem', color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Net Probability Impact
               </span>
               <div
@@ -249,12 +250,12 @@ export default function Simulator() {
                   gap: '0.4rem',
                   fontFamily: 'var(--font-mono)',
                   color: !modifiedResult
-                    ? '#64748B'
+                    ? 'var(--text-dim)'
                     : delta > 0
-                    ? '#34D399'
+                    ? 'var(--color-success-text)'
                     : delta < 0
-                    ? '#FB7185'
-                    : '#F8FAFC',
+                    ? 'var(--color-danger-text)'
+                    : 'var(--text-heading)',
                 }}
               >
                 {!modifiedResult ? (
@@ -272,7 +273,7 @@ export default function Simulator() {
                     : `${delta > 0 ? '+' : ''}${delta.toFixed(2)}%`}
                 </span>
               </div>
-              <span style={{ fontSize: '0.775rem', color: '#94A3B8' }}>
+              <span style={{ fontSize: '0.775rem', color: 'var(--text-muted)' }}>
                 {!modifiedResult
                   ? 'Adjust sliders and run simulation'
                   : delta > 0
@@ -291,10 +292,10 @@ export default function Simulator() {
           <div className="sp-card">
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border-subtle)' }}>
               <div>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#FFFFFF' }}>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-heading)' }}>
                   Scenario Parameter Controls
                 </h3>
-                <span style={{ fontSize: '0.785rem', color: '#64748B' }}>
+                <span style={{ fontSize: '0.785rem', color: 'var(--text-dim)' }}>
                   Adjust variables to run against POST /predict
                 </span>
               </div>
@@ -468,10 +469,10 @@ export default function Simulator() {
           {/* Visualization & Comparison Panel */}
           <div className="sp-card" style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ marginBottom: '1.25rem' }}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#FFFFFF' }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-heading)' }}>
                 Scenario Outcome Comparison
               </h3>
-              <p style={{ fontSize: '0.8rem', color: '#64748B' }}>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}>
                 Visualizing Current Baseline vs Modified Parameters
               </p>
             </div>
@@ -479,15 +480,17 @@ export default function Simulator() {
             <div style={{ flex: 1, minHeight: '320px' }}>
               <ResponsiveContainer width="100%" height={320}>
                 <BarChart data={comparisonData} margin={{ top: 20, right: 20, left: -15, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                  <XAxis dataKey="scenario" stroke="#64748B" fontSize={12} tickLine={false} />
-                  <YAxis stroke="#64748B" fontSize={12} domain={[0, 100]} tickLine={false} unit="%" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" />
+                  <XAxis dataKey="scenario" stroke="var(--text-dim)" fontSize={12} tickLine={false} />
+                  <YAxis stroke="var(--text-dim)" fontSize={12} domain={[0, 100]} tickLine={false} unit="%" />
                   <Tooltip
                     contentStyle={{
-                      background: '#0F172A',
-                      border: '1px solid rgba(255,255,255,0.15)',
+                      background: 'var(--bg-card)',
+                      border: '1px solid var(--border-strong)',
                       borderRadius: '8px',
                       fontSize: '0.8rem',
+                      color: 'var(--text-main)',
+                      boxShadow: 'var(--shadow-elevated)',
                     }}
                     formatter={(val) => [`${val}%`, '']}
                   />
@@ -510,17 +513,17 @@ export default function Simulator() {
                 fontSize: '0.85rem',
               }}
             >
-              <div style={{ padding: '0.75rem', background: 'rgba(255,255,255,0.02)', borderRadius: '8px' }}>
-                <span style={{ color: '#64748B', display: 'block', fontSize: '0.75rem' }}>Current Prediction</span>
-                <strong style={{ color: '#F8FAFC', display: 'block', margin: '0.2rem 0' }}>
+              <div style={{ padding: '0.75rem', background: 'var(--bg-card-subtle)', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
+                <span style={{ color: 'var(--text-dim)', display: 'block', fontSize: '0.75rem' }}>Current Prediction</span>
+                <strong style={{ color: 'var(--text-heading)', display: 'block', margin: '0.2rem 0' }}>
                   {currentResult?.prediction || 'Successful Outcome'}
                 </strong>
                 <RiskBadge risk={currentResult?.risk_level} />
               </div>
 
-              <div style={{ padding: '0.75rem', background: 'rgba(56, 189, 248, 0.05)', borderRadius: '8px', border: '1px solid rgba(56, 189, 248, 0.2)' }}>
-                <span style={{ color: '#38BDF8', display: 'block', fontSize: '0.75rem' }}>Simulated Prediction</span>
-                <strong style={{ color: '#F8FAFC', display: 'block', margin: '0.2rem 0' }}>
+              <div style={{ padding: '0.75rem', background: 'var(--bg-card-subtle)', borderRadius: '8px', border: '1px solid var(--accent-cyan)' }}>
+                <span style={{ color: 'var(--accent-cyan)', display: 'block', fontSize: '0.75rem', fontWeight: 600 }}>Simulated Prediction</span>
+                <strong style={{ color: 'var(--text-heading)', display: 'block', margin: '0.2rem 0' }}>
                   {modifiedResult?.prediction || currentResult?.prediction || 'Pending Run'}
                 </strong>
                 <RiskBadge risk={modifiedResult?.risk_level || currentResult?.risk_level} />

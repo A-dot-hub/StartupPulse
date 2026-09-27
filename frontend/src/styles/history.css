@@ -28,7 +28,7 @@
 }
 
 .history-table th {
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--bg-card-subtle);
   padding: 0.85rem 1.25rem;
   font-size: 0.775rem;
   font-weight: 700;
@@ -51,14 +51,14 @@
 }
 
 .history-table tr:hover td {
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--bg-card-hover);
 }
 
 /* Detail modal / drawer */
 .history-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.65);
   backdrop-filter: blur(4px);
   z-index: 100;
   display: flex;
@@ -91,6 +91,6 @@
 }
 
 .history-modal-close:hover {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-heading);
+  background: var(--bg-card-subtle);
 }
