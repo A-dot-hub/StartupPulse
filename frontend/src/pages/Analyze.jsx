@@ -19,10 +19,11 @@ export default function Analyze() {
       const response = await predictStartup(formData);
 
       if (response && response.success && response.data) {
-        // Save to state and navigate to /results
+        // Save canonical record and navigate to /results
+        const canonicalInput = response.data.input || formData;
         const predictionRecord = {
           ...response.data,
-          input: formData,
+          input: canonicalInput,
           prediction_id: response.prediction_id,
           saved_to_database: response.saved_to_database,
           timestamp: new Date().toISOString(),

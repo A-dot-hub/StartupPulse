@@ -64,21 +64,32 @@ export default function SHAPExplanation({
   ];
   const maxImpact = Math.max(0.001, ...allImpacts);
 
-  const formatDisplayValue = (val, featureName) => {
+  const formatDisplayValue = (val, featureName, rawValue) => {
     if (val === undefined || val === null || val === 'N/A') return '';
     if (typeof val === 'number') {
-      if (featureName.toLowerCase().includes('funding total') || featureName.toLowerCase().includes('per round')) {
-        return formatCurrency(val, true);
+      if (
+        featureName.toLowerCase().includes('funding total') ||
+        featureName.toLowerCase().includes('per round')
+      ) {
+        return formatCurrency(val);
       }
       if (featureName.toLowerCase().includes('rounds')) {
-        return `${val} rds`;
+        return `${val} ${val === 1 ? 'round' : 'rounds'}`;
       }
-      if (featureName.toLowerCase().includes('age') || featureName.toLowerCase().includes('years')) {
+      if (
+        featureName.toLowerCase().includes('age') ||
+        featureName.toLowerCase().includes('years')
+      ) {
         return `${val} yrs`;
       }
       return formatNumber(val);
     }
-    return String(val);
+
+    const strVal = String(val);
+    if (strVal === 'Unknown' && rawValue && rawValue !== 'Unknown') {
+      return `Unknown (unseen category: "${rawValue}")`;
+    }
+    return strVal;
   };
 
   return (
@@ -118,7 +129,7 @@ export default function SHAPExplanation({
               positiveFactors.map((factor, idx) => {
                 const impactVal = Number(factor.impact) || 0;
                 const barWidth = Math.min(100, Math.max(8, (Math.abs(impactVal) / maxImpact) * 100));
-                const valDisplay = formatDisplayValue(factor.value, factor.feature);
+                const valDisplay = formatDisplayValue(factor.value, factor.feature, factor.raw_value);
 
                 return (
                   <div key={`pos-${idx}`} className="shap-factor-item">
@@ -165,7 +176,7 @@ export default function SHAPExplanation({
               negativeFactors.map((factor, idx) => {
                 const impactVal = Number(factor.impact) || 0;
                 const barWidth = Math.min(100, Math.max(8, (Math.abs(impactVal) / maxImpact) * 100));
-                const valDisplay = formatDisplayValue(factor.value, factor.feature);
+                const valDisplay = formatDisplayValue(factor.value, factor.feature, factor.raw_value);
 
                 return (
                   <div key={`neg-${idx}`} className="shap-factor-item">

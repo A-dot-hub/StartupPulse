@@ -2,13 +2,18 @@ import joblib
 import pandas as pd
 
 from pathlib import Path
+import sys
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+if str(BASE_DIR) not in sys.path:
+    sys.path.append(str(BASE_DIR))
+
+from ml.input_utils import build_startup_dataframe, normalize_startup_dict
 
 
 # ============================================================
 # CONFIGURATION
 # ============================================================
-
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 MODEL_PATH = (
     BASE_DIR
@@ -30,205 +35,77 @@ print("StartupPulse model loaded successfully.")
 
 
 # ============================================================
-# PREDICTION FUNCTION
+# PREDICTION FUNCTION FROM CANONICAL DATAFRAME
 # ============================================================
+
+def predict_startup_from_df(startup_df: pd.DataFrame, trained_model=None):
+    """
+    Run XGBoost model prediction on single canonical DataFrame.
+    """
+    m = trained_model or model
+
+    prediction = m.predict(startup_df)[0]
+    probabilities = m.predict_proba(startup_df)[0]
+
+    # Probability of class 0 = Failure
+    failure_probability = float(probabilities[0])
+
+    # Probability of class 1 = Successful Outcome
+    success_probability = float(probabilities[1])
+
+    if prediction == 1:
+        prediction_label = "Successful Outcome"
+    else:
+        prediction_label = "Failure"
+
+    if success_probability >= 0.70:
+        risk_level = "Low"
+    elif success_probability >= 0.45:
+        risk_level = "Medium"
+    else:
+        risk_level = "High"
+
+    canonical_dict = startup_df.iloc[0].to_dict()
+
+    return {
+        "prediction": prediction_label,
+        "prediction_class": int(prediction),
+        "success_probability": round(success_probability * 100, 2),
+        "failure_probability": round(failure_probability * 100, 2),
+        "risk_level": risk_level,
+        "input": canonical_dict
+    }
+
 
 def predict_startup(
     primary_category,
     funding_total_usd,
     country_code,
-    state_code,
-    region,
-    city,
-    funding_rounds,
-    startup_age,
-    years_to_first_funding,
-    funding_per_round
+    state_code="Unknown",
+    region="Unknown",
+    city="Unknown",
+    funding_rounds=1,
+    startup_age=0.0,
+    years_to_first_funding=0.0,
+    funding_per_round=None
 ):
     """
-    Predict startup success/failure.
-
-    Parameters
-    ----------
-    primary_category : str
-        Main startup category.
-
-    funding_total_usd : float
-        Total funding received by the startup.
-
-    country_code : str
-        Country code such as USA, IND, GBR.
-
-    state_code : str
-        State/province code.
-
-    region : str
-        Startup region.
-
-    city : str
-        Startup city.
-
-    funding_rounds : int
-        Number of funding rounds.
-
-    startup_age : float
-        Startup age in years.
-
-    years_to_first_funding : float
-        Years between founding and first funding.
-
-    funding_per_round : float
-        Average funding per funding round.
-
-    Returns
-    -------
-    dict
-        Prediction result.
+    Predict startup success/failure using single canonical input normalization.
     """
+    startup_df = build_startup_dataframe({
+        "primary_category": primary_category,
+        "funding_total_usd": funding_total_usd,
+        "country_code": country_code,
+        "state_code": state_code,
+        "region": region,
+        "city": city,
+        "funding_rounds": funding_rounds,
+        "startup_age": startup_age,
+        "years_to_first_funding": years_to_first_funding,
+        "funding_per_round": funding_per_round
+    })
 
-    # ========================================================
-    # 1. CREATE INPUT DATAFRAME
-    # ========================================================
-
-    startup_data = pd.DataFrame([
-        {
-            "primary_category": primary_category,
-            "funding_total_usd": funding_total_usd,
-            "country_code": country_code,
-            "state_code": state_code,
-            "region": region,
-            "city": city,
-            "funding_rounds": funding_rounds,
-            "startup_age": startup_age,
-            "years_to_first_funding": years_to_first_funding,
-            "funding_per_round": funding_per_round
-        }
-    ])
-
-
-    # ========================================================
-    # 2. CLEAN CATEGORICAL VALUES
-    # ========================================================
-
-    categorical_columns = [
-        "primary_category",
-        "country_code",
-        "state_code",
-        "region",
-        "city"
-    ]
-
-    for column in categorical_columns:
-
-        startup_data[column] = (
-            startup_data[column]
-            .fillna("Unknown")
-            .astype(str)
-            .str.strip()
-        )
-
-        startup_data[column] = startup_data[column].replace(
-            "",
-            "Unknown"
-        )
-
-
-    # ========================================================
-    # 3. CLEAN NUMERICAL VALUES
-    # ========================================================
-
-    numerical_columns = [
-        "funding_total_usd",
-        "funding_rounds",
-        "startup_age",
-        "years_to_first_funding",
-        "funding_per_round"
-    ]
-
-    for column in numerical_columns:
-
-        startup_data[column] = pd.to_numeric(
-            startup_data[column],
-            errors="coerce"
-        )
-
-    startup_data[numerical_columns] = (
-        startup_data[numerical_columns]
-        .fillna(0)
-    )
-
-
-    # ========================================================
-    # 4. MODEL PREDICTION
-    # ========================================================
-
-    prediction = model.predict(
-        startup_data
-    )[0]
-
-    probabilities = model.predict_proba(
-        startup_data
-    )[0]
-
-
-    # Probability of class 0 = Failure
-    failure_probability = probabilities[0]
-
-    # Probability of class 1 = Successful Outcome
-    success_probability = probabilities[1]
-
-
-    # ========================================================
-    # 5. DETERMINE PREDICTION LABEL
-    # ========================================================
-
-    if prediction == 1:
-
-        prediction_label = "Successful Outcome"
-
-    else:
-
-        prediction_label = "Failure"
-
-
-    # ========================================================
-    # 6. DETERMINE RISK LEVEL
-    # ========================================================
-
-    if success_probability >= 0.70:
-
-        risk_level = "Low"
-
-    elif success_probability >= 0.45:
-
-        risk_level = "Medium"
-
-    else:
-
-        risk_level = "High"
-
-
-    # ========================================================
-    # 7. RETURN RESULT
-    # ========================================================
-
-    return {
-        "prediction": prediction_label,
-
-        "prediction_class": int(prediction),
-
-        "success_probability": round(
-            float(success_probability) * 100,
-            2
-        ),
-
-        "failure_probability": round(
-            float(failure_probability) * 100,
-            2
-        ),
-
-        "risk_level": risk_level
-    }
+    return predict_startup_from_df(startup_df)
 
 
 # ============================================================

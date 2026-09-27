@@ -102,13 +102,17 @@ export default function Simulator() {
     setIsSimulating(true);
     setSimError(null);
 
+    const total = Number(simInputs.funding_total_usd) || 0;
+    const rounds = Math.max(1, parseInt(simInputs.funding_rounds, 10) || 1);
+    const canonicalPerRound = Math.round((total / rounds) * 100) / 100;
+
     const payload = {
       ...baselineInput,
-      funding_total_usd: Number(simInputs.funding_total_usd) || 0,
-      funding_rounds: Math.max(1, parseInt(simInputs.funding_rounds, 10) || 1),
+      funding_total_usd: total,
+      funding_rounds: rounds,
       startup_age: Math.max(0, Number(simInputs.startup_age) || 0),
       years_to_first_funding: Math.max(0, Number(simInputs.years_to_first_funding) || 0),
-      funding_per_round: Math.max(0, Number(simInputs.funding_per_round) || 0),
+      funding_per_round: canonicalPerRound,
     };
 
     try {

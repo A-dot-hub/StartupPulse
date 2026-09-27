@@ -212,15 +212,30 @@ export default function StartupForm({
   };
 
   const handleChange = (field, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    setFormData((prev) => {
+      const updated = {
+        ...prev,
+        [field]: value,
+      };
+
+      // Canonical formula: funding_per_round = funding_total_usd / funding_rounds
+      // Always keep funding_per_round synchronized and mathematically consistent
+      if (field === 'funding_total_usd' || field === 'funding_rounds') {
+        const total = field === 'funding_total_usd' ? (Number(value) || 0) : (Number(prev.funding_total_usd) || 0);
+        const rounds = Math.max(1, parseInt(field === 'funding_rounds' ? value : prev.funding_rounds, 10) || 1);
+        updated.funding_per_round = Math.round((total / rounds) * 100) / 100;
+      }
+
+      return updated;
+    });
 
     if (errors[field]) {
       setErrors((prev) => {
         const updated = { ...prev };
         delete updated[field];
+        if (field === 'funding_total_usd' || field === 'funding_rounds') {
+          delete updated.funding_per_round;
+        }
         return updated;
       });
     }
@@ -230,7 +245,10 @@ export default function StartupForm({
     const total = Number(formData.funding_total_usd) || 0;
     const rounds = Math.max(1, parseInt(formData.funding_rounds, 10) || 1);
     const perRound = Math.round((total / rounds) * 100) / 100;
-    handleChange('funding_per_round', perRound);
+    setFormData((prev) => ({
+      ...prev,
+      funding_per_round: perRound,
+    }));
   };
 
   const loadPreset = (preset) => {
@@ -242,7 +260,14 @@ export default function StartupForm({
       setSelectedDropdown('Other');
       setCustomCategory(cat);
     }
-    setFormData({ ...preset.data });
+    const total = Number(preset.data.funding_total_usd) || 0;
+    const rounds = Math.max(1, parseInt(preset.data.funding_rounds, 10) || 1);
+    const perRound = Math.round((total / rounds) * 100) / 100;
+
+    setFormData({
+      ...preset.data,
+      funding_per_round: perRound,
+    });
     setErrors({});
   };
 
@@ -254,9 +279,16 @@ export default function StartupForm({
       const finalCategory =
         selectedDropdown === 'Other' ? customCategory.trim() : formData.primary_category.trim();
 
+      const total = Number(formData.funding_total_usd) || 0;
+      const rounds = Math.max(1, parseInt(formData.funding_rounds, 10) || 1);
+      const canonicalFundingPerRound = Math.round((total / rounds) * 100) / 100;
+
       onSubmit({
         ...formData,
         primary_category: finalCategory,
+        funding_total_usd: total,
+        funding_rounds: rounds,
+        funding_per_round: canonicalFundingPerRound,
       });
     }
   };
@@ -491,21 +523,15 @@ export default function StartupForm({
         <div className="form-group">
           <label className="form-label" htmlFor="funding_per_round">
             <span>Funding Per Round (USD) *</span>
-            <button
-              type="button"
-              className="autocalc-btn"
-              onClick={autoCalcFundingPerRound}
-              title="Compute: Total / Rounds"
-            >
-              <Calculator size={11} style={{ display: 'inline', marginRight: '2px' }} />
-              Auto-calculate
-            </button>
+            <span className="form-label-hint" style={{ color: 'var(--accent-cyan)' }}>
+              Auto: Total ÷ Rounds
+            </span>
           </label>
           <input
             id="funding_per_round"
             type="number"
             min="0"
-            step="5000"
+            step="1000"
             className="form-input tabular-nums"
             placeholder="1666666.67"
             value={formData.funding_per_round}

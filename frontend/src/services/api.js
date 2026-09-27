@@ -87,17 +87,21 @@ export async function getHealth() {
  * }
  */
 export async function predictStartup(startupData) {
+  const total = Math.max(0, Number(startupData.funding_total_usd) || 0);
+  const rounds = Math.max(1, parseInt(startupData.funding_rounds, 10) || 1);
+  const canonicalFundingPerRound = Math.round((total / rounds) * 100) / 100;
+
   const payload = {
     primary_category: String(startupData.primary_category || '').trim(),
-    funding_total_usd: Number(startupData.funding_total_usd) || 0,
+    funding_total_usd: total,
     country_code: String(startupData.country_code || 'Unknown').trim(),
     state_code: String(startupData.state_code || 'Unknown').trim(),
     region: String(startupData.region || 'Unknown').trim(),
     city: String(startupData.city || 'Unknown').trim(),
-    funding_rounds: Math.max(1, parseInt(startupData.funding_rounds, 10) || 1),
+    funding_rounds: rounds,
     startup_age: Math.max(0, Number(startupData.startup_age) || 0),
     years_to_first_funding: Math.max(0, Number(startupData.years_to_first_funding) || 0),
-    funding_per_round: Math.max(0, Number(startupData.funding_per_round) || 0),
+    funding_per_round: canonicalFundingPerRound,
   };
 
   const response = await apiClient.post('/predict', payload);
@@ -109,17 +113,21 @@ export async function predictStartup(startupData) {
  * @param {Object} startupData
  */
 export async function explainStartup(startupData) {
+  const total = Math.max(0, Number(startupData.funding_total_usd) || 0);
+  const rounds = Math.max(1, parseInt(startupData.funding_rounds, 10) || 1);
+  const canonicalFundingPerRound = Math.round((total / rounds) * 100) / 100;
+
   const payload = {
     primary_category: String(startupData.primary_category || '').trim(),
-    funding_total_usd: Number(startupData.funding_total_usd) || 0,
+    funding_total_usd: total,
     country_code: String(startupData.country_code || 'Unknown').trim(),
     state_code: String(startupData.state_code || 'Unknown').trim(),
     region: String(startupData.region || 'Unknown').trim(),
     city: String(startupData.city || 'Unknown').trim(),
-    funding_rounds: Math.max(1, parseInt(startupData.funding_rounds, 10) || 1),
+    funding_rounds: rounds,
     startup_age: Math.max(0, Number(startupData.startup_age) || 0),
     years_to_first_funding: Math.max(0, Number(startupData.years_to_first_funding) || 0),
-    funding_per_round: Math.max(0, Number(startupData.funding_per_round) || 0),
+    funding_per_round: canonicalFundingPerRound,
   };
 
   const response = await apiClient.post('/explain', payload);
