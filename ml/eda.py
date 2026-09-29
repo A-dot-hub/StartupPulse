@@ -5,7 +5,7 @@ df = pd.read_csv("data/big_startup_secsees_dataset.csv")
 
 print("\n===== DATASET SHAPE =====")
 print(df.shape)
-
+print(df.shape)
 print("\n===== COLUMN NAMES =====")
 print(df.columns.tolist())
 
