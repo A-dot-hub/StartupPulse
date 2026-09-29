@@ -1,6 +1,6 @@
 import pandas as pd
 
-# Load dataset
+# Load dataset in the system
 df = pd.read_csv("data/big_startup_secsees_dataset.csv")
 
 print("\n===== DATASET SHAPE =====")
