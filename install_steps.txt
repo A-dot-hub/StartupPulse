@@ -1,4 +1,4 @@
-git clone <your-repository>
+git clone https://github.com/A-dot-hub/StartupPulse
 cd StartupPulse
 
 py -3.11 -m venv venv
